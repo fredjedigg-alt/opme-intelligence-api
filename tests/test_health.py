@@ -14,7 +14,7 @@ def test_health_public(client):
     assert resp.status_code == 200
     body = resp.json()
     assert body["status"] == "ok"
-    assert body["taxonomy_nodes"] == 10
+    assert body["taxonomy_nodes"] == 39
     assert body["price_observations"] > 100
     assert body["llm_enabled"] is False
 
@@ -28,5 +28,5 @@ def test_openapi_available(client):
 def test_taxonomy_listing(client):
     resp = client.get("/api/v1/taxonomy")
     assert resp.status_code == 200
-    assert len(resp.json()) == 10
+    assert len(resp.json()) == 39
     assert all(">" in node["path"] for node in resp.json())

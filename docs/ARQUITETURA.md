@@ -81,8 +81,10 @@ As tabelas `tender`/`tender_item` são alimentadas pelo Radar de Licitações
 (não são preços praticados por fornecedor); o cruzamento com a mediana de
 mercado é feito on-the-fly em `GET /tenders/{id}/items?benchmark=true`.
 
-A taxonomia tem 10 nós em 5 especialidades (Ortopedia, Cardiologia, Vascular,
-Cirurgia Geral, Neurocirurgia, Bucomaxilo). As observações de preço são sintéticas,
+A taxonomia tem 39 nós em 11 especialidades (Ortopedia, Coluna, Cardiologia,
+Vascular, Cirurgia Geral, Neurocirurgia, Oftalmologia, Urologia, Reconstrução,
+Otorrino, Bucomaxilo) — expandida a partir das demandas reais observadas nas
+licitações do PNCP. As observações de preço são sintéticas,
 geradas com semente fixa (`random.seed(42)`), com dispersão controlada e outliers
 propositais para exercitar o benchmark.
 
