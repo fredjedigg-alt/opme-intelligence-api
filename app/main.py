@@ -13,7 +13,6 @@ from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
 
 from . import __version__
 from .api.v1.router import api_router
@@ -89,12 +88,12 @@ async def request_context(request: Request, call_next):
 app.include_router(api_router, prefix=settings.api_v1_prefix)
 
 STATIC_DIR = Path(__file__).parent / "static"
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
-@app.get("/", include_in_schema=False, summary="Interface web")
+@app.get("/", include_in_schema=False, summary="Painel web")
 def root():
-    """Serve a interface web (classificação, benchmark e comparabilidade).
+    """Serve o painel web (classificação, benchmark, comparabilidade, lote e
+    Radar de Licitações).
 
     A documentação interativa da API continua em /docs e /redoc.
     """

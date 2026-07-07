@@ -27,7 +27,9 @@ class Settings(BaseSettings):
     database_path: str = "opme.db"
 
     # --- Segurança / JWT ---
-    jwt_secret_key: str = "troque-este-segredo-em-producao-por-uma-string-aleatoria-longa-32b+"
+    jwt_secret_key: str = (
+        "troque-este-segredo-em-producao-por-uma-string-aleatoria-longa-32b+"
+    )
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
 
@@ -41,6 +43,20 @@ class Settings(BaseSettings):
     # --- LLM opcional ---
     anthropic_api_key: str = ""
     anthropic_model: str = "claude-opus-4-8"
+
+    # --- Radar de Licitações (PNCP) ---
+    pncp_search_url: str = "https://pncp.gov.br/api/search/"
+    pncp_api_url: str = "https://pncp.gov.br/api/pncp/v1"
+    pncp_timeout_seconds: float = 30.0
+    # Termos usados na varredura quando o cliente não informa os seus.
+    pncp_default_terms: str = (
+        "OPME, órteses e próteses, prótese, órtese, "
+        "stent, marcapasso, material especial cirúrgico"
+    )
+
+    @property
+    def pncp_terms_list(self) -> list[str]:
+        return [t.strip() for t in self.pncp_default_terms.split(",") if t.strip()]
 
     @property
     def llm_enabled(self) -> bool:

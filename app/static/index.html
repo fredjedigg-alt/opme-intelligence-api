@@ -1,516 +1,709 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>OPME Intelligence</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%232a78d6%22/><text x=%2250%22 y=%2266%22 font-size=%2258%22 font-family=%22system-ui,sans-serif%22 font-weight=%22700%22 fill=%22white%22 text-anchor=%22middle%22>O</text></svg>">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ATLAS Health — OPME Intelligence</title>
 <style>
   :root {
-    color-scheme: light;
-    --surface-1:      #fcfcfb;
-    --surface-2:      #f9f9f7;
-    --text-primary:   #0b0b0b;
-    --text-secondary: #52514e;
-    --text-muted:     #898781;
-    --border:         rgba(11,11,11,0.10);
-    --gridline:       #e1e0d9;
-    --series-blue:    #2a78d6;
-    --seq-100:        #cde2fb;
-    --seq-400:        #3987e5;
-    --status-good:     #0ca30c;
-    --status-warning:  #fab219;
-    --status-serious:  #ec835a;
-    --status-critical: #d03b3b;
+    --navy: #0b1f3a;
+    --navy-2: #12294a;
+    --navy-3: #1a3560;
+    --gold: #c9a227;
+    --gold-light: #e6c65c;
+    --bg: #f4f6fa;
+    --card: #ffffff;
+    --text: #1c2b3a;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --green: #15803d;
+    --green-bg: #dcfce7;
+    --amber: #b45309;
+    --amber-bg: #fef3c7;
+    --red: #b91c1c;
+    --red-bg: #fee2e2;
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      color-scheme: dark;
-      --surface-1:      #1a1a19;
-      --surface-2:      #0d0d0d;
-      --text-primary:   #ffffff;
-      --text-secondary: #c3c2b7;
-      --text-muted:     #898781;
-      --border:         rgba(255,255,255,0.10);
-      --gridline:       #2c2c2a;
-      --series-blue:    #3987e5;
-      --seq-100:        #184f95;
-      --seq-400:        #3987e5;
-    }
-  }
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    margin: 0;
-    background: var(--surface-2);
-    color: var(--text-primary);
-    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: var(--bg); color: var(--text); min-height: 100vh;
   }
+
+  /* ---------- Header ---------- */
   header {
-    padding: 20px 24px 16px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 8px;
+    background: var(--navy); color: #fff;
+    padding: 14px 28px; display: flex; align-items: center; gap: 14px;
+    border-bottom: 3px solid var(--gold);
   }
-  header h1 { font-size: 18px; margin: 0; font-weight: 650; }
-  header .sub { color: var(--text-secondary); font-size: 13px; }
-  #health { font-size: 12px; color: var(--text-muted); }
-  #health.ok::before { content: "● "; color: var(--status-good); }
-  #health.err::before { content: "● "; color: var(--status-critical); }
-  nav.tabs {
-    display: flex;
-    gap: 4px;
-    padding: 12px 24px 0;
-    border-bottom: 1px solid var(--border);
+  .logo-mark {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, var(--gold-light), var(--gold) 70%);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; color: var(--navy); font-size: 18px; flex-shrink: 0;
   }
+  header h1 { font-size: 17px; font-weight: 700; letter-spacing: 0.4px; }
+  header h1 span { color: var(--gold); }
+  header .sub { font-size: 12px; color: #b8c4d6; }
+  header .spacer { flex: 1; }
+  #who { font-size: 13px; color: #b8c4d6; }
+  #logoutBtn {
+    background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.35);
+    padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px;
+  }
+  #logoutBtn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ---------- Login ---------- */
+  #loginView {
+    max-width: 380px; margin: 80px auto; background: var(--card);
+    border: 1px solid var(--border); border-radius: 12px; padding: 32px;
+    box-shadow: 0 8px 24px rgba(11,31,58,.08);
+  }
+  #loginView h2 { font-size: 18px; margin-bottom: 4px; color: var(--navy); }
+  #loginView p { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+  label { display: block; font-size: 13px; font-weight: 600; margin: 12px 0 4px; color: var(--navy); }
+  input, textarea, select {
+    width: 100%; padding: 9px 12px; border: 1px solid var(--border);
+    border-radius: 7px; font-size: 14px; font-family: inherit; background: #fff;
+  }
+  input:focus, textarea:focus, select:focus { outline: 2px solid var(--gold); border-color: var(--gold); }
+  textarea { resize: vertical; min-height: 74px; }
+  .btn {
+    background: var(--navy); color: #fff; border: none; padding: 10px 22px;
+    border-radius: 7px; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 16px;
+  }
+  .btn:hover { background: var(--navy-3); }
+  .btn:disabled { opacity: .55; cursor: wait; }
+  .btn-gold { background: var(--gold); color: var(--navy); }
+  .btn-gold:hover { background: var(--gold-light); }
+  .btn-sm { padding: 7px 14px; font-size: 13px; margin-top: 0; }
+
+  /* ---------- Layout ---------- */
+  #appView { display: none; max-width: 1060px; margin: 0 auto; padding: 24px 20px 60px; }
+  nav.tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
   nav.tabs button {
-    appearance: none;
-    border: none;
-    background: none;
-    color: var(--text-secondary);
-    font: inherit;
-    font-weight: 600;
-    padding: 10px 14px;
-    border-radius: 8px 8px 0 0;
-    cursor: pointer;
+    background: transparent; border: 1px solid var(--border); color: var(--muted);
+    padding: 9px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;
   }
-  nav.tabs button.active {
-    color: var(--text-primary);
-    background: var(--surface-1);
-    box-shadow: inset 0 -2px 0 var(--series-blue);
-  }
-  main { max-width: 880px; margin: 0 auto; padding: 24px; }
-  section.panel { display: none; }
-  section.panel.active { display: block; }
+  nav.tabs button.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .panel { display: none; }
+  .panel.active { display: block; }
   .card {
-    background: var(--surface-1);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 22px; margin-bottom: 18px;
   }
-  .card + .card { margin-top: 14px; }
-  .field-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-  label { display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
-  button.example {
-    appearance: none;
-    border: none;
-    background: none;
-    color: var(--series-blue);
-    font: inherit;
-    font-size: 12.5px;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 0;
+  .card h3 { font-size: 15px; color: var(--navy); margin-bottom: 4px; }
+  .card .hint { font-size: 12.5px; color: var(--muted); margin-bottom: 10px; }
+  .row { display: flex; gap: 14px; flex-wrap: wrap; }
+  .row > div { flex: 1; min-width: 200px; }
+
+  /* ---------- Results ---------- */
+  .badge { display: inline-block; padding: 3px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 700; }
+  .badge.ok  { background: var(--green-bg); color: var(--green); }
+  .badge.rev { background: var(--amber-bg); color: var(--amber); }
+  .badge.no  { background: var(--red-bg); color: var(--red); }
+  .badge.fed { background: var(--navy); color: #fff; }
+  .badge.est { background: #ede9fe; color: #5b21b6; }
+  .badge.mun { background: #e0f2fe; color: #0369a1; }
+  .link-pncp { color: var(--navy-3); font-weight: 600; font-size: 12.5px; }
+  tr.items-row > td { background: #f8fafc; padding: 14px 16px; }
+  .kv { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; margin-top: 14px; }
+  .kv .item { background: var(--bg); border-radius: 8px; padding: 10px 12px; }
+  .kv .item .k { font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
+  .kv .item .v { font-size: 14px; font-weight: 600; margin-top: 2px; word-break: break-word; }
+  .confbar { height: 8px; background: var(--border); border-radius: 999px; overflow: hidden; margin-top: 6px; }
+  .confbar > div { height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .chip { background: var(--navy-2); color: #dbe4f0; font-size: 12px; padding: 3px 10px; border-radius: 999px; }
+  .chip b { color: var(--gold-light); font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13.5px; }
+  th { text-align: left; padding: 8px 10px; background: var(--navy); color: #fff; font-size: 12px; letter-spacing: .3px; }
+  th:first-child { border-radius: 6px 0 0 0; } th:last-child { border-radius: 0 6px 0 0; }
+  td { padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: #f8fafc; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .stat-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 14px; }
+  .stat { background: var(--navy); color: #fff; border-radius: 10px; padding: 14px; }
+  .stat .k { font-size: 11px; text-transform: uppercase; color: #9fb0c8; letter-spacing: .5px; }
+  .stat .v { font-size: 20px; font-weight: 700; margin-top: 4px; color: var(--gold-light); }
+  .saving {
+    border: 2px solid var(--gold); border-radius: 10px; padding: 16px; margin-top: 16px;
+    background: linear-gradient(135deg, #fffbeb, #fff);
   }
-  button.example:hover { text-decoration: underline; }
-  textarea, input {
-    width: 100%;
-    font: inherit;
-    padding: 10px 12px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--surface-2);
-    color: var(--text-primary);
-    resize: vertical;
-  }
-  textarea { min-height: 64px; }
-  .row { display: flex; gap: 12px; flex-wrap: wrap; }
-  .row > div { flex: 1; min-width: 180px; }
-  .field { margin-bottom: 12px; }
-  button.run {
-    appearance: none;
-    border: none;
-    background: var(--series-blue);
-    color: #fff;
-    font: inherit;
-    font-weight: 650;
-    padding: 10px 18px;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-  button.run:disabled { opacity: 0.55; cursor: default; }
-  button.run:hover:not(:disabled) { filter: brightness(1.06); }
-  .result { margin-top: 16px; }
-  .headline { font-size: 17px; font-weight: 650; margin: 0 0 4px; }
-  .taxpath { color: var(--text-secondary); font-size: 13px; margin: 0 0 12px; }
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 12.5px;
-    font-weight: 650;
-    padding: 3px 9px;
-    border-radius: 999px;
-    color: #fff;
-  }
-  .badge.good { background: var(--status-good); }
-  .badge.warning { background: var(--status-warning); color: #241a00; }
-  .badge.serious { background: var(--status-serious); }
-  .badge.critical { background: var(--status-critical); }
-  dl.attrs { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 12px 0; font-size: 13.5px; }
-  dl.attrs dt { color: var(--text-muted); }
-  dl.attrs dd { margin: 0; }
-  .evidence { margin-top: 12px; font-size: 13px; }
-  .evidence ul { margin: 6px 0 0; padding-left: 18px; color: var(--text-secondary); }
-  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 10px; margin: 14px 0; text-align: center; }
-  .stat-grid .stat { background: var(--surface-2); border-radius: 8px; padding: 8px 4px; }
-  .stat-grid .stat b { display: block; font-size: 15px; }
-  .stat-grid .stat span { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .03em; }
-  .range-wrap { margin: 18px 0 10px; }
-  .range-track { position: relative; height: 10px; border-radius: 6px; background: var(--gridline); }
-  .range-fill { position: absolute; top: 0; bottom: 0; border-radius: 6px; background: var(--seq-100); }
-  .range-mark { position: absolute; top: -5px; width: 3px; height: 20px; border-radius: 2px; background: var(--series-blue); }
-  .range-mark.ref { background: var(--status-critical); width: 3px; }
-  .range-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 6px; }
-  table.groups { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 6px; }
-  table.groups th { text-align: left; color: var(--text-muted); font-weight: 600; font-size: 11px; text-transform: uppercase; padding: 4px 8px 4px 0; border-bottom: 1px solid var(--gridline); }
-  table.groups td { padding: 6px 8px 6px 0; border-bottom: 1px solid var(--gridline); font-variant-numeric: tabular-nums; }
-  .cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .saving { margin-top: 14px; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); }
-  .saving.opp { background: color-mix(in srgb, var(--status-warning) 12%, var(--surface-1)); }
-  .saving.ok { background: color-mix(in srgb, var(--status-good) 12%, var(--surface-1)); }
-  .muted-note { color: var(--text-muted); font-size: 13px; margin-top: 10px; }
-  .error { color: var(--status-critical); font-size: 13.5px; margin-top: 12px; }
-  .empty { color: var(--text-muted); font-size: 13.5px; }
+  .saving .big { font-size: 26px; font-weight: 800; color: var(--navy); }
+  .error-box { background: var(--red-bg); color: var(--red); border-radius: 8px; padding: 12px 14px; font-size: 13.5px; margin-top: 12px; }
+  .info-box { background: var(--amber-bg); color: var(--amber); border-radius: 8px; padding: 12px 14px; font-size: 13.5px; margin-top: 12px; }
+  .result { margin-top: 6px; }
+  progress { width: 100%; height: 10px; margin-top: 10px; }
+  footer { text-align: center; font-size: 12px; color: var(--muted); padding: 18px; }
+  .toolbar { display: flex; gap: 10px; align-items: center; margin-top: 14px; flex-wrap: wrap; }
 </style>
 </head>
 <body>
 
 <header>
+  <div class="logo-mark">A</div>
   <div>
-    <h1>OPME Intelligence</h1>
-    <div class="sub">Inteligência de mercado para Órteses, Próteses e Materiais Especiais — Atlas Health</div>
+    <h1>ATLAS <span>HEALTH</span> · OPME Intelligence</h1>
+    <div class="sub">Inteligência de mercado para Órteses, Próteses e Materiais Especiais</div>
   </div>
-  <span id="health">verificando…</span>
+  <div class="spacer"></div>
+  <span id="who"></span>
+  <button id="logoutBtn" style="display:none" onclick="logout()">Sair</button>
 </header>
 
-<nav class="tabs">
-  <button data-tab="classify" class="active">Classificar</button>
-  <button data-tab="benchmark">Benchmark de preço</button>
-  <button data-tab="comparability">Comparabilidade</button>
-</nav>
+<!-- ============ LOGIN ============ -->
+<div id="loginView">
+  <h2>Acesso ao painel</h2>
+  <p>Autenticação via token JWT emitido pela API.</p>
+  <form id="loginForm">
+    <label>Usuário</label>
+    <input id="loginUser" value="atlas" autocomplete="username" />
+    <label>Senha</label>
+    <input id="loginPass" type="password" value="atlas123" autocomplete="current-password" />
+    <button class="btn btn-gold" style="width:100%" type="submit">Entrar</button>
+  </form>
+  <div id="loginError"></div>
+</div>
 
-<main>
+<!-- ============ APP ============ -->
+<div id="appView">
+  <nav class="tabs">
+    <button data-tab="classify" class="active">Classificar item</button>
+    <button data-tab="benchmark">Benchmark de preço</button>
+    <button data-tab="compare">Comparabilidade</button>
+    <button data-tab="batch">Análise em lote</button>
+    <button data-tab="tenders">Radar de licitações</button>
+  </nav>
 
+  <!-- ---- Classificar ---- -->
   <section id="tab-classify" class="panel active">
     <div class="card">
-      <div class="field">
-        <div class="field-head">
-          <label for="cl-desc">Descrição livre do item (cotação, nota fiscal, catálogo…)</label>
-          <button type="button" class="example" id="cl-example">usar exemplo</button>
+      <h3>Classificação e extração de item OPME</h3>
+      <div class="hint">Cole a descrição do item como aparece na cotação, nota ou contrato. A IA estrutura em nome canônico, taxonomia e atributos.</div>
+      <textarea id="clsDesc" placeholder="Ex.: Placa bloqueada distal rádio volar 2.4 mm titânio 6 furos, estéril, ref XZ-244, fabricante OrthoMed"></textarea>
+      <div class="row" style="margin-top:10px">
+        <div style="max-width:260px">
+          <label>Tipo de documento (opcional)</label>
+          <select id="clsDocType">
+            <option value="desconhecido">Desconhecido</option>
+            <option value="cotacao">Cotação</option>
+            <option value="contrato">Contrato</option>
+            <option value="catalogo">Catálogo</option>
+            <option value="nota_fiscal">Nota fiscal</option>
+            <option value="edital">Edital</option>
+          </select>
         </div>
-        <textarea id="cl-desc" placeholder="Ex.: Placa bloqueada distal rádio volar 2.4 mm titânio 6 furos, estéril, ref XZ-244, fabricante OrthoMed"></textarea>
       </div>
-      <button class="run" id="cl-run">Classificar</button>
+      <button class="btn" id="clsBtn" onclick="runClassify()">Classificar</button>
     </div>
-    <div id="cl-result" class="result"></div>
+    <div id="clsResult" class="result"></div>
   </section>
 
+  <!-- ---- Benchmark ---- -->
   <section id="tab-benchmark" class="panel">
     <div class="card">
-      <div class="field">
-        <div class="field-head">
-          <label for="bm-desc">Descrição do item</label>
-          <button type="button" class="example" id="bm-example">usar exemplo</button>
+      <h3>Benchmark de preço de mercado</h3>
+      <div class="hint">Informe o item e, opcionalmente, o preço pago/cotado para calcular a economia potencial versus a mediana de mercado.</div>
+      <textarea id="bmDesc" placeholder="Ex.: stent farmacológico coronário 3.0 x 18 mm"></textarea>
+      <div class="row" style="margin-top:10px">
+        <div>
+          <label>Preço de referência (R$, opcional)</label>
+          <input id="bmPrice" type="number" min="0" step="0.01" placeholder="Ex.: 7000" />
         </div>
-        <textarea id="bm-desc" placeholder="Ex.: stent farmacológico coronário 3.0 x 18 mm"></textarea>
-      </div>
-      <div class="row">
-        <div class="field">
-          <label for="bm-price">Preço de referência (R$, opcional)</label>
-          <input id="bm-price" type="number" step="0.01" min="0" placeholder="Ex.: 7000">
-        </div>
-        <div class="field">
-          <label for="bm-region">Região (opcional)</label>
-          <input id="bm-region" type="text" placeholder="Ex.: Centro-Oeste">
+        <div>
+          <label>Região (opcional)</label>
+          <input id="bmRegion" placeholder="Ex.: Centro-Oeste" />
         </div>
       </div>
-      <button class="run" id="bm-run">Calcular benchmark</button>
+      <button class="btn" id="bmBtn" onclick="runBenchmark()">Analisar mercado</button>
     </div>
-    <div id="bm-result" class="result"></div>
+    <div id="bmResult" class="result"></div>
   </section>
 
-  <section id="tab-comparability" class="panel">
+  <!-- ---- Comparabilidade ---- -->
+  <section id="tab-compare" class="panel">
     <div class="card">
-      <div class="field-head" style="margin-bottom: 4px">
-        <span></span>
-        <button type="button" class="example" id="cp-example">usar exemplo</button>
-      </div>
+      <h3>Comparabilidade entre dois itens</h3>
+      <div class="hint">Decide se dois itens são equivalentes para efeito de comparação de preço.</div>
       <div class="row">
-        <div class="field">
-          <label for="cp-a">Item A</label>
-          <textarea id="cp-a" placeholder="Descrição do primeiro item"></textarea>
+        <div>
+          <label>Item A</label>
+          <textarea id="cpA" placeholder="Descrição do item A"></textarea>
         </div>
-        <div class="field">
-          <label for="cp-b">Item B</label>
-          <textarea id="cp-b" placeholder="Descrição do segundo item"></textarea>
+        <div>
+          <label>Item B</label>
+          <textarea id="cpB" placeholder="Descrição do item B"></textarea>
         </div>
       </div>
-      <button class="run" id="cp-run">Comparar</button>
+      <button class="btn" id="cpBtn" onclick="runCompare()">Comparar</button>
     </div>
-    <div id="cp-result" class="result"></div>
+    <div id="cpResult" class="result"></div>
   </section>
 
-</main>
+  <!-- ---- Lote ---- -->
+  <section id="tab-batch" class="panel">
+    <div class="card">
+      <h3>Análise em lote (lista de itens do cliente)</h3>
+      <div class="hint">
+        Um item por linha. Para incluir o preço pago, separe com ponto e vírgula:
+        <code>descrição do item ; 7000</code>. Cada item passa por classificação + benchmark; ao final, exporte o CSV.
+      </div>
+      <textarea id="btInput" style="min-height:140px" placeholder="stent farmacológico coronário 3.0 x 18 mm ; 7000&#10;Placa bloqueada distal rádio volar 2.4 mm titânio 6 furos ; 3200&#10;parafuso pedicular poliaxial 6.5 x 45"></textarea>
+      <div class="toolbar">
+        <button class="btn btn-sm" id="btBtn" onclick="runBatch()">Processar lote</button>
+        <button class="btn btn-sm btn-gold" id="btCsv" onclick="exportCsv()" style="display:none">Baixar CSV</button>
+        <span id="btStatus" style="font-size:13px;color:var(--muted)"></span>
+      </div>
+      <progress id="btProg" value="0" max="100" style="display:none"></progress>
+    </div>
+    <div id="btResult" class="result"></div>
+  </section>
+
+  <!-- ---- Radar de Licitações ---- -->
+  <section id="tab-tenders" class="panel">
+    <div class="card">
+      <h3>Radar de licitações OPME — PNCP</h3>
+      <div class="hint">
+        Varre o Portal Nacional de Contratações Públicas em busca de editais <b>recebendo propostas</b>
+        nas esferas federal, estadual e municipal; cada item do edital passa pelo classificador para
+        identificar as demandas de OPME.
+      </div>
+      <div class="row">
+        <div>
+          <label>Termos de busca (vírgula; vazio = padrão OPME)</label>
+          <input id="tdTerms" placeholder="Ex.: OPME, prótese de quadril, stent" />
+        </div>
+        <div style="max-width:120px">
+          <label>UF</label>
+          <input id="tdUf" maxlength="2" placeholder="Ex.: GO" />
+        </div>
+        <div style="max-width:200px">
+          <label>Esfera</label>
+          <select id="tdEsfera">
+            <option value="">Todas</option>
+            <option value="Federal">Federal</option>
+            <option value="Estadual">Estadual</option>
+            <option value="Municipal">Municipal</option>
+            <option value="Distrital">Distrital</option>
+          </select>
+        </div>
+      </div>
+      <div class="toolbar">
+        <button class="btn btn-sm btn-gold" id="tdScanBtn" onclick="runTenderScan()">Varrer PNCP agora</button>
+        <button class="btn btn-sm" id="tdListBtn" onclick="loadTenders()">Atualizar lista</button>
+        <span id="tdStatus" style="font-size:13px;color:var(--muted)"></span>
+      </div>
+      <div id="tdSummary"></div>
+    </div>
+    <div id="tdResult" class="result"></div>
+  </section>
+
+  <footer>ATLAS Health Consultoria · motor regras + similaridade (LLM opcional) · dados de preço sintéticos para demonstração · licitações: dados públicos do PNCP</footer>
+</div>
 
 <script>
 const API = "/api/v1";
-let token = null;
+let token = sessionStorage.getItem("opme_token") || null;
+let batchRows = [];
 
-// Sessão de uso pessoal/local: autentica em segundo plano com a credencial de
-// demonstração documentada no README, sem expor tela de login ao usuário.
-async function ensureToken(force) {
-  if (token && !force) return token;
-  const res = await fetch(`${API}/auth/token`, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: "username=atlas&password=atlas123",
-  });
-  if (!res.ok) throw new Error("Falha ao autenticar na API.");
-  const data = await res.json();
-  token = data.access_token;
-  return token;
+/* ---------------- helpers ---------------- */
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const brl = (v) => (v == null || isNaN(v)) ? "—" : Number(v).toLocaleString("pt-BR", {style:"currency", currency:"BRL"});
+const pct = (v) => (v == null) ? "—" : (Number(v)).toFixed(1).replace(".", ",") + "%";
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+function badge(decision) {
+  const map = {
+    MATCH: ["ok","MATCH"], COMPARABLE: ["ok","COMPARÁVEL"],
+    REVIEW: ["rev","REVISAR"],
+    NO_MATCH: ["no","SEM CORRESPONDÊNCIA"], NOT_COMPARABLE: ["no","NÃO COMPARÁVEL"],
+  };
+  const [cls, label] = map[decision] || ["rev", decision];
+  return `<span class="badge ${cls}">${label}</span>`;
 }
+function confBar(c) {
+  return `<div class="confbar"><div style="width:${Math.round(c*100)}%"></div></div>
+          <div style="font-size:12px;color:var(--muted);margin-top:3px">Confiança: ${(c*100).toFixed(0)}%</div>`;
+}
+function errBox(el, msg) { el.innerHTML = `<div class="error-box">${esc(msg)}</div>`; }
 
-async function apiPost(path, body) {
-  await ensureToken(false);
-  let res = await fetch(`${API}${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-    body: JSON.stringify(body),
-  });
-  if (res.status === 401) {
-    await ensureToken(true);
-    res = await fetch(`${API}${path}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-      body: JSON.stringify(body),
-    });
+async function apiFetch(path, opts = {}, retries = 2) {
+  const headers = Object.assign({ "Authorization": "Bearer " + token }, opts.headers || {});
+  const res = await fetch(API + path, Object.assign({}, opts, { headers }));
+  if (res.status === 401) { logout(); throw new Error("Sessão expirada. Faça login novamente."); }
+  if (res.status === 429 && retries > 0) {
+    await sleep(5000);
+    return apiFetch(path, opts, retries - 1);
   }
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data?.error?.message || data?.detail || "Erro ao chamar a API.");
-  return data;
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const detail = body?.error?.message || body?.detail?.[0]?.msg || body?.detail || res.statusText;
+    throw new Error(typeof detail === "string" ? detail : JSON.stringify(detail));
+  }
+  return body;
+}
+const postJson = (path, data) => apiFetch(path, {
+  method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data),
+});
+
+/* ---------------- auth ---------------- */
+async function doLogin(e) {
+  e.preventDefault();
+  $("loginError").innerHTML = "";
+  try {
+    const form = new URLSearchParams({ username: $("loginUser").value, password: $("loginPass").value });
+    const res = await fetch(API + "/auth/token", { method: "POST", body: form });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(body?.error?.message || "Usuário ou senha inválidos.");
+    token = body.access_token;
+    sessionStorage.setItem("opme_token", token);
+    showApp();
+  } catch (err) { errBox($("loginError"), err.message); }
+}
+function logout() {
+  token = null; sessionStorage.removeItem("opme_token");
+  $("appView").style.display = "none";
+  $("loginView").style.display = "block";
+  $("logoutBtn").style.display = "none";
+  $("who").textContent = "";
+}
+function showApp() {
+  $("loginView").style.display = "none";
+  $("appView").style.display = "block";
+  $("logoutBtn").style.display = "inline-block";
+  $("who").textContent = "conectado";
 }
 
-function el(html) {
-  const t = document.createElement("template");
-  t.innerHTML = html.trim();
-  return t.content.firstChild;
-}
-function esc(s) {
-  return String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
-}
-function pct(n) { return `${(n * 100).toFixed(0)}%`; }
-function money(n) { return n == null ? "—" : n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }); }
-
-function statusBadge(kind, label, icon) {
-  return `<span class="badge ${kind}">${icon} ${esc(label)}</span>`;
-}
-const DECISION_BADGE = {
-  MATCH:         () => statusBadge("good", "Match", "✓"),
-  REVIEW:        () => statusBadge("warning", "Revisar", "⚠"),
-  NO_MATCH:      () => statusBadge("critical", "Não encontrado", "✕"),
-  COMPARABLE:    () => statusBadge("good", "Comparável", "✓"),
-  NOT_COMPARABLE:() => statusBadge("critical", "Não comparável", "✕"),
-};
-const DISPERSION_BADGE = {
-  baixa: () => statusBadge("good", "Dispersão baixa", "●"),
-  media: () => statusBadge("warning", "Dispersão média", "●"),
-  alta:  () => statusBadge("critical", "Dispersão alta", "●"),
-};
-
-// --- Tabs ---
+/* ---------------- tabs ---------------- */
 document.querySelectorAll("nav.tabs button").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll("nav.tabs button").forEach(b => b.classList.remove("active"));
-    document.querySelectorAll("section.panel").forEach(p => p.classList.remove("active"));
+    document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
     btn.classList.add("active");
-    document.getElementById(`tab-${btn.dataset.tab}`).classList.add("active");
+    $("tab-" + btn.dataset.tab).classList.add("active");
   });
 });
 
-// --- Exemplos de um clique ---
-document.getElementById("cl-example").addEventListener("click", () => {
-  document.getElementById("cl-desc").value =
-    "Placa bloqueada distal rádio volar 2.4 mm titânio 6 furos, estéril, ref XZ-244, fabricante OrthoMed";
-});
-document.getElementById("bm-example").addEventListener("click", () => {
-  document.getElementById("bm-desc").value = "stent farmacológico coronário 3.0 x 18 mm";
-  document.getElementById("bm-price").value = "7000";
-});
-document.getElementById("cp-example").addEventListener("click", () => {
-  document.getElementById("cp-a").value = "Placa bloqueada distal rádio volar 2.4mm titânio 6 furos";
-  document.getElementById("cp-b").value = "Placa bloqueada distal rádio volar 2.4mm aço inox 8 furos";
-});
-
-// --- Health check ---
-(async () => {
-  const badge = document.getElementById("health");
+/* ---------------- classify ---------------- */
+function kvItem(k, v) {
+  if (v == null || v === "" || (typeof v === "object" && !Object.keys(v).length)) return "";
+  const val = typeof v === "object" ? Object.entries(v).map(([a,b]) => `${a}: ${b}`).join(" · ") : v;
+  return `<div class="item"><div class="k">${esc(k)}</div><div class="v">${esc(val)}</div></div>`;
+}
+function renderClassify(r) {
+  const evid = (r.evidence || []).map(e => `<span class="chip"><b>${esc(e.field)}</b> ${esc(e.text)}</span>`).join("");
+  const cands = (r.candidates || []).slice(0, 3).map(c =>
+    `<tr><td>${esc(c.path)}</td><td class="num">${(c.score*100).toFixed(0)}%</td></tr>`).join("");
+  return `<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <h3>${esc(r.canonical_name)}</h3>${badge(r.decision)}
+    </div>
+    <div class="hint">${esc(r.taxonomy_path || "Sem correspondência na taxonomia")} · motor: ${esc(r.engine)}</div>
+    ${confBar(r.confidence)}
+    <div class="kv">
+      ${kvItem("Especialidade", r.specialty)}
+      ${kvItem("Família", r.family)}
+      ${kvItem("Material", r.material)}
+      ${kvItem("Estéril", r.sterile == null ? null : (r.sterile ? "Sim" : "Não"))}
+      ${kvItem("Dimensões", r.dimensions)}
+      ${kvItem("Código ref.", r.reference_code)}
+      ${kvItem("Fabricante", r.manufacturer)}
+      ${kvItem("Unidade padrão", r.uom_standard)}
+    </div>
+    ${evid ? `<label style="margin-top:14px">Evidências extraídas</label><div class="chips">${evid}</div>` : ""}
+    ${cands ? `<label style="margin-top:14px">Candidatos da taxonomia</label>
+      <table><tr><th>Caminho</th><th class="num">Score</th></tr>${cands}</table>` : ""}
+    ${r.ambiguity_note ? `<div class="info-box">${esc(r.ambiguity_note)}</div>` : ""}
+  </div>`;
+}
+async function runClassify() {
+  const out = $("clsResult"); out.innerHTML = ""; $("clsBtn").disabled = true;
   try {
-    const res = await fetch(`${API}/health`);
-    const data = await res.json();
-    badge.textContent = `online · v${data.version} · ${data.taxonomy_nodes} classes · ${data.price_observations} observações de preço`;
-    badge.className = "ok";
-  } catch {
-    badge.textContent = "API indisponível";
-    badge.className = "err";
+    const r = await postJson("/classify", { description: $("clsDesc").value, document_type: $("clsDocType").value });
+    out.innerHTML = renderClassify(r);
+  } catch (err) { errBox(out, err.message); }
+  finally { $("clsBtn").disabled = false; }
+}
+
+/* ---------------- benchmark ---------------- */
+function groupTable(title, rows) {
+  if (!rows || !rows.length) return "";
+  return `<label style="margin-top:14px">${title}</label>
+    <table><tr><th>Grupo</th><th class="num">Observações</th><th class="num">Mediana</th></tr>
+    ${rows.map(g => `<tr><td>${esc(g.key)}</td><td class="num">${g.count}</td><td class="num">${brl(g.median_price)}</td></tr>`).join("")}
+    </table>`;
+}
+function renderBenchmark(r) {
+  const s = r.stats;
+  let html = `<div class="card">
+    <h3>Mercado — ${esc(r.matched_taxonomy_path || r.raw_description)}</h3>
+    <div class="hint">Base comparável: ${esc(r.comparable_basis)} · dispersão: ${esc(r.dispersion_level || "—")}</div>`;
+  if (s) {
+    html += `<div class="stat-cards">
+      <div class="stat"><div class="k">Mediana</div><div class="v">${brl(s.median)}</div></div>
+      <div class="stat"><div class="k">P25 – P75</div><div class="v" style="font-size:15px">${brl(s.p25)}<br>${brl(s.p75)}</div></div>
+      <div class="stat"><div class="k">Mín – Máx</div><div class="v" style="font-size:15px">${brl(s.min)}<br>${brl(s.max)}</div></div>
+      <div class="stat"><div class="k">Observações</div><div class="v">${s.count}</div></div>
+      <div class="stat"><div class="k">Coef. variação</div><div class="v">${pct(s.coefficient_of_variation * 100)}</div></div>
+    </div>`;
   }
-})();
-
-async function runAction(buttonId, fn) {
-  const btn = document.getElementById(buttonId);
-  btn.disabled = true;
-  const original = btn.textContent;
-  btn.textContent = "Processando…";
+  if (r.saving_opportunity) {
+    const so = r.saving_opportunity;
+    const above = so.potential_saving_abs > 0;
+    html += `<div class="saving">
+      <div style="font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)">Oportunidade de economia</div>
+      <div class="big">${above ? brl(so.potential_saving_abs) + " (" + pct(so.potential_saving_pct) + ")" : "Preço dentro do mercado"}</div>
+      <div style="font-size:13.5px;margin-top:4px">Preço de referência ${brl(so.reference_price)} vs. mediana de mercado ${brl(so.market_median)} — <b>${esc(so.verdict)}</b></div>
+    </div>`;
+  }
+  html += groupTable("Por fornecedor", r.by_supplier);
+  html += groupTable("Por região", r.by_region);
+  if (r.outliers && r.outliers.length) {
+    html += `<label style="margin-top:14px">Outliers detectados (IQR)</label>
+      <table><tr><th>Fornecedor</th><th>Região</th><th class="num">Preço</th><th>Motivo</th></tr>
+      ${r.outliers.map(o => `<tr><td>${esc(o.supplier)}</td><td>${esc(o.region)}</td><td class="num">${brl(o.normalized_price)}</td><td>${esc(o.reason)}</td></tr>`).join("")}
+      </table>`;
+  }
+  if (r.note) html += `<div class="info-box">${esc(r.note)}</div>`;
+  return html + "</div>";
+}
+async function runBenchmark() {
+  const out = $("bmResult"); out.innerHTML = ""; $("bmBtn").disabled = true;
   try {
-    await fn();
-  } finally {
-    btn.disabled = false;
-    btn.textContent = original;
+    const payload = { description: $("bmDesc").value };
+    if ($("bmPrice").value) payload.reference_price = Number($("bmPrice").value);
+    if ($("bmRegion").value.trim()) payload.region = $("bmRegion").value.trim();
+    const r = await postJson("/benchmark", payload);
+    out.innerHTML = renderBenchmark(r);
+  } catch (err) { errBox(out, err.message); }
+  finally { $("bmBtn").disabled = false; }
+}
+
+/* ---------------- comparability ---------------- */
+async function runCompare() {
+  const out = $("cpResult"); out.innerHTML = ""; $("cpBtn").disabled = true;
+  try {
+    const r = await postJson("/comparability", { item_a: $("cpA").value, item_b: $("cpB").value });
+    const diffs = (r.critical_differences || []).map(d => `<li>${esc(d)}</li>`).join("");
+    out.innerHTML = `<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <h3>Resultado da comparação</h3>${badge(r.decision)}
+      </div>
+      ${confBar(r.confidence)}
+      <div class="kv">
+        ${kvItem("Item A (canônico)", r.item_a_canonical)}
+        ${kvItem("Item B (canônico)", r.item_b_canonical)}
+        ${kvItem("Taxonomia A", r.taxonomy_a)}
+        ${kvItem("Taxonomia B", r.taxonomy_b)}
+        ${kvItem("Mesma taxonomia", r.same_taxonomy ? "Sim" : "Não")}
+        ${kvItem("Similaridade de atributos", (r.attribute_similarity * 100).toFixed(0) + "%")}
+      </div>
+      ${diffs ? `<label style="margin-top:14px">Diferenças críticas</label><ul style="margin:6px 0 0 20px;font-size:13.5px">${diffs}</ul>` : ""}
+      <div class="info-box" style="background:var(--bg);color:var(--text)">${esc(r.rationale)}</div>
+    </div>`;
+  } catch (err) { errBox(out, err.message); }
+  finally { $("cpBtn").disabled = false; }
+}
+
+/* ---------------- batch ---------------- */
+async function runBatch() {
+  const lines = $("btInput").value.split("\n").map(l => l.trim()).filter(Boolean);
+  const out = $("btResult");
+  if (!lines.length) { errBox(out, "Informe pelo menos um item (um por linha)."); return; }
+  $("btBtn").disabled = true; $("btCsv").style.display = "none";
+  $("btProg").style.display = "block"; $("btProg").value = 0; $("btProg").max = lines.length;
+  batchRows = [];
+  out.innerHTML = "";
+
+  for (let i = 0; i < lines.length; i++) {
+    const parts = lines[i].split(";");
+    const desc = parts[0].trim();
+    const price = parts[1] ? Number(parts[1].replace(",", ".").trim()) : null;
+    $("btStatus").textContent = `Processando ${i + 1} de ${lines.length}…`;
+    const row = { descricao: desc, preco_ref: price };
+    try {
+      const cls = await postJson("/classify", { description: desc });
+      row.classe = cls.taxonomy_path || cls.canonical_name;
+      row.decisao = cls.decision;
+      row.confianca = cls.confidence;
+      const payload = { description: desc };
+      if (price) payload.reference_price = price;
+      const bm = await postJson("/benchmark", payload);
+      row.mediana = bm.stats ? bm.stats.median : null;
+      row.dispersao = bm.dispersion_level;
+      if (bm.saving_opportunity) {
+        row.economia_abs = bm.saving_opportunity.potential_saving_abs;
+        row.economia_pct = bm.saving_opportunity.potential_saving_pct;
+        row.veredito = bm.saving_opportunity.verdict;
+      }
+    } catch (err) { row.erro = err.message; }
+    batchRows.push(row);
+    $("btProg").value = i + 1;
+  }
+
+  const totalSaving = batchRows.reduce((a, r) => a + (r.economia_abs > 0 ? r.economia_abs : 0), 0);
+  $("btStatus").textContent = `Concluído — ${batchRows.length} itens.`;
+  $("btCsv").style.display = "inline-block";
+  out.innerHTML = `<div class="card">
+    <h3>Resultado do lote</h3>
+    ${totalSaving > 0 ? `<div class="saving"><div style="font-size:12px;text-transform:uppercase;color:var(--muted)">Economia potencial total identificada</div><div class="big">${brl(totalSaving)}</div></div>` : ""}
+    <table>
+      <tr><th>Item</th><th>Classe</th><th>Decisão</th><th class="num">Conf.</th><th class="num">Preço pago</th><th class="num">Mediana mercado</th><th class="num">Economia</th></tr>
+      ${batchRows.map(r => r.erro
+        ? `<tr><td>${esc(r.descricao)}</td><td colspan="6" style="color:var(--red)">${esc(r.erro)}</td></tr>`
+        : `<tr>
+            <td>${esc(r.descricao)}</td>
+            <td style="font-size:12.5px">${esc(r.classe || "—")}</td>
+            <td>${badge(r.decisao)}</td>
+            <td class="num">${r.confianca != null ? (r.confianca*100).toFixed(0) + "%" : "—"}</td>
+            <td class="num">${brl(r.preco_ref)}</td>
+            <td class="num">${brl(r.mediana)}</td>
+            <td class="num" style="font-weight:700;color:${r.economia_abs > 0 ? "var(--green)" : "var(--muted)"}">
+              ${r.economia_abs != null ? brl(r.economia_abs) + " (" + pct(r.economia_pct) + ")" : "—"}</td>
+          </tr>`).join("")}
+    </table>
+  </div>`;
+  $("btBtn").disabled = false;
+}
+
+function exportCsv() {
+  const headers = ["item","classe","decisao","confianca","preco_pago","mediana_mercado","economia_abs","economia_pct","veredito","erro"];
+  const csvCell = (v) => {
+    let s = v == null ? "" : String(v);
+    // Fórmulas não são interpretadas: prefixo neutralizador para =, +, -, @
+    if (/^[=+\-@]/.test(s)) s = "'" + s;
+    return '"' + s.replace(/"/g, '""') + '"';
+  };
+  const lines = [headers.join(";")].concat(batchRows.map(r => [
+    r.descricao, r.classe, r.decisao,
+    r.confianca != null ? (r.confianca * 100).toFixed(0) + "%" : "",
+    r.preco_ref ?? "", r.mediana ?? "",
+    r.economia_abs ?? "", r.economia_pct != null ? r.economia_pct.toFixed(1) : "",
+    r.veredito ?? "", r.erro ?? "",
+  ].map(csvCell).join(";")));
+  const blob = new Blob(["﻿" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "opme-analise-lote.csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ---------------- radar de licitações ---------------- */
+const dtBR = (iso) => {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  return isNaN(d) ? esc(iso) : d.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short" });
+};
+function esferaBadge(e) {
+  const map = { Federal: "fed", Estadual: "est", Municipal: "mun", Distrital: "est" };
+  return `<span class="badge ${map[e] || "rev"}">${esc(e || "?")}</span>`;
+}
+
+async function runTenderScan() {
+  const st = $("tdStatus"), sum = $("tdSummary");
+  $("tdScanBtn").disabled = true; sum.innerHTML = "";
+  st.textContent = "Varrendo o PNCP (busca + itens + classificação)…";
+  try {
+    const payload = { max_pages: 1 };
+    const terms = $("tdTerms").value.split(",").map(t => t.trim()).filter(Boolean);
+    if (terms.length) payload.terms = terms;
+    if ($("tdUf").value.trim()) payload.uf = $("tdUf").value.trim().toUpperCase();
+    if ($("tdEsfera").value) payload.esfera = $("tdEsfera").value;
+    const r = await postJson("/tenders/scan", payload);
+    st.textContent = "";
+    const esferas = Object.entries(r.by_esfera).map(([k, v]) => `${esferaBadge(k)} ${v}`).join(" &nbsp; ");
+    sum.innerHTML = `<div class="stat-cards">
+        <div class="stat"><div class="k">Licitações abertas</div><div class="v">${r.tenders_found}</div></div>
+        <div class="stat"><div class="k">Novas nesta varredura</div><div class="v">${r.tenders_new}</div></div>
+        <div class="stat"><div class="k">Itens OPME</div><div class="v">${r.items_opme} / ${r.items_scanned}</div></div>
+        <div class="stat"><div class="k">Demanda OPME estimada</div><div class="v" style="font-size:16px">${brl(r.opme_estimated_value)}</div></div>
+      </div>
+      <div style="margin-top:12px;font-size:13.5px">${esferas}</div>
+      ${r.item_fetch_errors ? `<div class="info-box">${r.item_fetch_errors} edital(is) sem itens (falha pontual no PNCP) — repita a varredura mais tarde.</div>` : ""}`;
+    await loadTenders();
+  } catch (err) { st.textContent = ""; errBox(sum, err.message); }
+  finally { $("tdScanBtn").disabled = false; }
+}
+
+async function loadTenders() {
+  const out = $("tdResult");
+  const params = new URLSearchParams({ page_size: 50, only_open: "true" });
+  if ($("tdUf").value.trim()) params.set("uf", $("tdUf").value.trim().toUpperCase());
+  if ($("tdEsfera").value) params.set("esfera", $("tdEsfera").value);
+  try {
+    const r = await apiFetch("/tenders?" + params);
+    if (!r.total) {
+      out.innerHTML = `<div class="card"><div class="hint">Nenhuma licitação no repositório para esses filtros. Execute a varredura.</div></div>`;
+      return;
+    }
+    out.innerHTML = `<div class="card">
+      <h3>Licitações com propostas em aberto (${r.total})</h3>
+      <div class="hint">Ordenadas pelo prazo de propostas. Clique em "Itens" para ver as demandas classificadas e o cruzamento com a mediana de mercado.</div>
+      <table>
+        <tr><th>Órgão</th><th>Esfera</th><th>UF</th><th>Prazo propostas</th><th class="num">Itens OPME</th><th class="num">Valor OPME est.</th><th></th></tr>
+        ${r.tenders.map(t => `
+          <tr id="tender-${t.tender_id}">
+            <td><b>${esc(t.orgao_nome || "—")}</b><br>
+                <span style="font-size:12px;color:var(--muted)">${esc(t.municipio || "")} · ${esc(t.modalidade || "")} ·
+                <a class="link-pncp" href="${esc(t.source_url)}" target="_blank" rel="noopener">ver no PNCP ↗</a></span></td>
+            <td>${esferaBadge(t.esfera)}</td>
+            <td>${esc(t.uf || "—")}</td>
+            <td>${dtBR(t.data_fim_propostas)}</td>
+            <td class="num">${t.items_opme} / ${t.items_total}</td>
+            <td class="num">${brl(t.opme_estimated_value)}</td>
+            <td><button class="btn btn-sm" onclick="toggleTenderItems(${t.tender_id})">Itens</button></td>
+          </tr>`).join("")}
+      </table>
+    </div>`;
+  } catch (err) { errBox(out, err.message); }
+}
+
+async function toggleTenderItems(tenderId) {
+  const anchor = $("tender-" + tenderId);
+  const existing = document.getElementById("items-" + tenderId);
+  if (existing) { existing.remove(); return; }
+  const row = document.createElement("tr");
+  row.id = "items-" + tenderId;
+  row.className = "items-row";
+  row.innerHTML = `<td colspan="7"><span style="font-size:13px;color:var(--muted)">Carregando itens e benchmark…</span></td>`;
+  anchor.after(row);
+  try {
+    const r = await apiFetch(`/tenders/${tenderId}/items?benchmark=true`);
+    const opme = r.items.filter(i => i.is_opme), rest = r.items.filter(i => !i.is_opme);
+    const line = (i) => `
+      <tr>
+        <td>${i.numero_item ?? "—"}</td>
+        <td>${esc(i.canonical_name || i.description)}<br>
+            <span style="font-size:11.5px;color:var(--muted)">${esc(i.taxonomy_path || "")}</span></td>
+        <td>${badge(i.classify_decision)}</td>
+        <td class="num">${i.quantity ?? "—"} ${esc(i.unit || "")}</td>
+        <td class="num">${brl(i.unit_price_estimated)}</td>
+        <td class="num">${brl(i.total_estimated)}</td>
+        <td class="num">${i.benchmark ? brl(i.benchmark.market_median) : "—"}</td>
+        <td class="num" style="font-weight:700;color:${i.benchmark && i.benchmark.delta_pct > 0 ? "var(--green)" : "var(--muted)"}">
+            ${i.benchmark && i.benchmark.delta_pct != null ? pct(i.benchmark.delta_pct) : "—"}</td>
+      </tr>`;
+    row.innerHTML = `<td colspan="7">
+      <b style="font-size:13.5px;color:var(--navy)">Demandas OPME identificadas (${opme.length})</b>
+      <table>
+        <tr><th>#</th><th>Item</th><th>Decisão</th><th class="num">Qtde</th><th class="num">Vlr unit. edital</th><th class="num">Vlr total</th><th class="num">Mediana mercado</th><th class="num">Edital vs. mercado</th></tr>
+        ${opme.map(line).join("") || `<tr><td colspan="8" style="color:var(--muted)">Nenhum item classificado como OPME.</td></tr>`}
+      </table>
+      ${rest.length ? `<div style="margin-top:10px;font-size:12.5px;color:var(--muted)">${rest.length} item(ns) do edital não classificados como OPME (ruído/serviços).</div>` : ""}
+    </td>`;
+  } catch (err) {
+    row.innerHTML = `<td colspan="7"><div class="error-box">${esc(err.message)}</div></td>`;
   }
 }
 
-// --- Classificar ---
-document.getElementById("cl-run").addEventListener("click", () => runAction("cl-run", async () => {
-  const out = document.getElementById("cl-result");
-  const description = document.getElementById("cl-desc").value.trim();
-  if (description.length < 3) { out.innerHTML = `<p class="error">Descreva o item com pelo menos 3 caracteres.</p>`; return; }
-  out.innerHTML = "";
-  try {
-    const r = await apiPost("/classify", { description });
-    const dims = Object.entries(r.dimensions || {}).map(([k, v]) => `${k}: ${v}`).join(", ") || "—";
-    out.appendChild(el(`
-      <div class="card">
-        <p class="headline">${esc(r.canonical_name)}</p>
-        <p class="taxpath">${esc(r.taxonomy_path || "sem classe correspondente")}</p>
-        ${DECISION_BADGE[r.decision]()} <span class="badge" style="background:var(--surface-2);color:var(--text-secondary)">confiança ${pct(r.confidence)}</span>
-        <dl class="attrs">
-          <dt>Material</dt><dd>${esc(r.material || "—")}</dd>
-          <dt>Estéril</dt><dd>${r.sterile === null ? "—" : (r.sterile ? "sim" : "não")}</dd>
-          <dt>Dimensões</dt><dd>${esc(dims)}</dd>
-          <dt>Código de referência</dt><dd>${esc(r.reference_code || "—")}</dd>
-          <dt>Fabricante</dt><dd>${esc(r.manufacturer || "—")}</dd>
-          <dt>Motor</dt><dd>${esc(r.engine)}</dd>
-        </dl>
-        ${r.ambiguity_note ? `<p class="muted-note">${esc(r.ambiguity_note)}</p>` : ""}
-        ${(r.evidence || []).length ? `<div class="evidence"><strong>Evidências extraídas</strong><ul>${r.evidence.map(e => `<li><b>${esc(e.field)}:</b> "${esc(e.text)}"</li>`).join("")}</ul></div>` : ""}
-        ${(r.candidates || []).length ? `<div class="evidence"><strong>Outras classes candidatas</strong><ul>${r.candidates.map(c => `<li>${esc(c.path)} — ${pct(c.score)}</li>`).join("")}</ul></div>` : ""}
-      </div>
-    `));
-  } catch (e) {
-    out.innerHTML = `<p class="error">${esc(e.message)}</p>`;
-  }
-}));
-
-// --- Benchmark ---
-document.getElementById("bm-run").addEventListener("click", () => runAction("bm-run", async () => {
-  const out = document.getElementById("bm-result");
-  const description = document.getElementById("bm-desc").value.trim();
-  const priceRaw = document.getElementById("bm-price").value;
-  const region = document.getElementById("bm-region").value.trim();
-  if (description.length < 3) { out.innerHTML = `<p class="error">Descreva o item com pelo menos 3 caracteres.</p>`; return; }
-  out.innerHTML = "";
-  try {
-    const r = await apiPost("/benchmark", {
-      description,
-      region: region || null,
-      reference_price: priceRaw ? Number(priceRaw) : null,
-    });
-    let statsHtml = `<p class="empty">${esc(r.note || "Sem observações de preço comparáveis para este item.")}</p>`;
-    if (r.stats) {
-      const s = r.stats;
-      const span = s.max - s.min || 1;
-      const posOf = v => ((v - s.min) / span) * 100;
-      const fillFrom = posOf(s.p25), fillTo = posOf(s.p75);
-      let refMark = "";
-      if (r.saving_opportunity) {
-        const p = Math.min(100, Math.max(0, posOf(r.saving_opportunity.reference_price)));
-        refMark = `<div class="range-mark ref" style="left:calc(${p}% - 1.5px)" title="Preço de referência"></div>`;
-      }
-      statsHtml = `
-        <div class="stat-grid">
-          <div class="stat"><b>${s.count}</b><span>observações</span></div>
-          <div class="stat"><b>${money(s.median)}</b><span>mediana</span></div>
-          <div class="stat"><b>${money(s.p25)}</b><span>p25</span></div>
-          <div class="stat"><b>${money(s.p75)}</b><span>p75</span></div>
-          <div class="stat"><b>${(s.coefficient_of_variation * 100).toFixed(0)}%</b><span>CV</span></div>
-        </div>
-        <div class="range-wrap">
-          <div class="range-track">
-            <div class="range-fill" style="left:${fillFrom}%;right:${100 - fillTo}%"></div>
-            <div class="range-mark" style="left:calc(${posOf(s.median)}% - 1.5px)" title="Mediana"></div>
-            ${refMark}
-          </div>
-          <div class="range-labels"><span>${money(s.min)}</span><span>${money(s.max)}</span></div>
-        </div>
-        ${r.dispersion_level ? DISPERSION_BADGE[r.dispersion_level]() : ""}
-      `;
-    }
-    const groupTable = (title, rows) => !rows.length ? "" : `
-      <div>
-        <strong style="font-size:13px">${title}</strong>
-        <table class="groups"><thead><tr><th>Chave</th><th>N</th><th>Mediana</th></tr></thead>
-        <tbody>${rows.map(g => `<tr><td>${esc(g.key)}</td><td>${g.count}</td><td>${money(g.median_price)}</td></tr>`).join("")}</tbody></table>
-      </div>`;
-    let savingHtml = "";
-    if (r.saving_opportunity) {
-      const so = r.saving_opportunity;
-      const isOpp = so.potential_saving_pct > 0;
-      savingHtml = `
-        <div class="saving ${isOpp ? "opp" : "ok"}">
-          ${statusBadge(isOpp ? "warning" : "good", isOpp ? `Oportunidade de economia: ${so.potential_saving_pct.toFixed(1)}%` : "Preço em linha com o mercado", isOpp ? "⚠" : "✓")}
-          <p style="margin:8px 0 0">${esc(so.verdict)} Referência: ${money(so.reference_price)} · Mediana de mercado: ${money(so.market_median)} · Economia potencial: ${money(so.potential_saving_abs)}.</p>
-        </div>`;
-    }
-    let outliersHtml = "";
-    if ((r.outliers || []).length) {
-      outliersHtml = `<div class="evidence"><strong>Outliers</strong><ul>${r.outliers.map(o => `<li>${esc(o.supplier)} (${esc(o.region)}) — ${money(o.normalized_price)} — ${esc(o.reason)}</li>`).join("")}</ul></div>`;
-    }
-    out.appendChild(el(`
-      <div class="card">
-        <p class="taxpath">${esc(r.matched_taxonomy_path || r.comparable_basis)} · confiança da classificação ${pct(r.classification_confidence)}</p>
-        ${statsHtml}
-        ${savingHtml}
-        <div class="cols-2">
-          ${groupTable("Por fornecedor", r.by_supplier)}
-          ${groupTable("Por região", r.by_region)}
-        </div>
-        ${outliersHtml}
-      </div>
-    `));
-  } catch (e) {
-    out.innerHTML = `<p class="error">${esc(e.message)}</p>`;
-  }
-}));
-
-// --- Comparabilidade ---
-document.getElementById("cp-run").addEventListener("click", () => runAction("cp-run", async () => {
-  const out = document.getElementById("cp-result");
-  const item_a = document.getElementById("cp-a").value.trim();
-  const item_b = document.getElementById("cp-b").value.trim();
-  if (item_a.length < 3 || item_b.length < 3) { out.innerHTML = `<p class="error">Descreva os dois itens com pelo menos 3 caracteres.</p>`; return; }
-  out.innerHTML = "";
-  try {
-    const r = await apiPost("/comparability", { item_a, item_b });
-    out.appendChild(el(`
-      <div class="card">
-        <div class="cols-2">
-          <div><p class="headline" style="font-size:15px">${esc(r.item_a_canonical)}</p><p class="taxpath">${esc(r.taxonomy_a || "—")}</p></div>
-          <div><p class="headline" style="font-size:15px">${esc(r.item_b_canonical)}</p><p class="taxpath">${esc(r.taxonomy_b || "—")}</p></div>
-        </div>
-        ${DECISION_BADGE[r.decision] ? DECISION_BADGE[r.decision]() : statusBadge("warning", "Revisar", "⚠")}
-        <span class="badge" style="background:var(--surface-2);color:var(--text-secondary)">similaridade de atributos ${pct(r.attribute_similarity)}</span>
-        <span class="badge" style="background:var(--surface-2);color:var(--text-secondary)">confiança ${pct(r.confidence)}</span>
-        <p style="margin-top:12px">${esc(r.rationale)}</p>
-        ${(r.critical_differences || []).length ? `<div class="evidence"><strong>Diferenças críticas</strong><ul>${r.critical_differences.map(d => `<li>${esc(d)}</li>`).join("")}</ul></div>` : ""}
-      </div>
-    `));
-  } catch (e) {
-    out.innerHTML = `<p class="error">${esc(e.message)}</p>`;
-  }
-}));
+/* ---------------- init ---------------- */
+$("loginForm").addEventListener("submit", doLogin);
+if (token) {
+  // Valida o token guardado contra a API antes de liberar o painel.
+  apiFetch("/taxonomy").then(showApp).catch(() => logout());
+}
 </script>
 </body>
 </html>

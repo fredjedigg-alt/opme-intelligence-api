@@ -49,7 +49,9 @@ documental são o caminho de evolução (Fases 2–3).
 | `app/ai/benchmark.py` | Estatística de preço, dispersão e outliers (Serviço 2). |
 | `app/ai/comparability.py` | Decisão de comparabilidade econômica (Serviço 3). |
 | `app/ai/llm.py` | Enriquecimento opcional por Claude, com fallback. |
-| `app/api/v1/*` | Rotas versionadas (auth, classify, benchmark, comparability, meta). |
+| `app/services/pncp.py` | Cliente HTTP dos endpoints públicos do PNCP (busca de editais + itens). |
+| `app/services/tender_scan.py` | Radar de Licitações (Serviço 4): varredura, dedupe/upsert e classificação de itens. |
+| `app/api/v1/*` | Rotas versionadas (auth, classify, benchmark, comparability, tenders, meta). |
 
 ## 3. Esquema de dados (implementado)
 
@@ -62,7 +64,22 @@ opme_taxonomy(taxonomy_id, specialty, family, subfamily,
 price_observation(obs_id, taxonomy_id→opme_taxonomy,
                   canonical_name, supplier, manufacturer, region,
                   uom_standard, normalized_price, observation_date)
+
+tender(tender_id, pncp_control_number UNIQUE, orgao_cnpj, orgao_nome,
+       esfera, uf, municipio, modalidade, ano, sequencial,
+       data_publicacao, data_fim_propostas, situacao, source_url,
+       matched_term, scanned_at, ...)
+
+tender_item(item_id, tender_id→tender, numero_item, description,
+            quantity, unit, unit_price_estimated, total_estimated,
+            is_opme, taxonomy_id, taxonomy_path, canonical_name,
+            classify_decision, classify_confidence)
 ```
+
+As tabelas `tender`/`tender_item` são alimentadas pelo Radar de Licitações
+(fonte: PNCP). Preços estimados de edital **não** entram em `price_observation`
+(não são preços praticados por fornecedor); o cruzamento com a mediana de
+mercado é feito on-the-fly em `GET /tenders/{id}/items?benchmark=true`.
 
 A taxonomia tem 10 nós em 5 especialidades (Ortopedia, Cardiologia, Vascular,
 Cirurgia Geral, Neurocirurgia, Bucomaxilo). As observações de preço são sintéticas,

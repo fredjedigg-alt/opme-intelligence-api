@@ -46,6 +46,52 @@ CREATE TABLE IF NOT EXISTS price_observation (
 
 CREATE INDEX IF NOT EXISTS idx_price_taxonomy ON price_observation(taxonomy_id);
 CREATE INDEX IF NOT EXISTS idx_price_region   ON price_observation(region);
+
+-- Licitações públicas encontradas pelo Radar (fonte: PNCP, Lei 14.133/2021).
+CREATE TABLE IF NOT EXISTS tender (
+    tender_id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    pncp_control_number TEXT UNIQUE NOT NULL,  -- numero_controle_pncp (chave de dedupe)
+    title               TEXT,
+    description         TEXT,
+    orgao_cnpj          TEXT NOT NULL,
+    orgao_nome          TEXT,
+    unidade_nome        TEXT,
+    esfera              TEXT,                  -- Federal / Estadual / Municipal
+    uf                  TEXT,
+    municipio           TEXT,
+    modalidade          TEXT,
+    ano                 INTEGER NOT NULL,
+    sequencial          INTEGER NOT NULL,
+    data_publicacao     TEXT,
+    data_fim_propostas  TEXT,
+    situacao            TEXT,
+    source_url          TEXT,
+    matched_term        TEXT,                  -- termo de busca que encontrou o edital
+    scanned_at          TEXT NOT NULL
+);
+
+-- Itens (demandas) de cada licitação, com classificação OPME do Serviço 1.
+CREATE TABLE IF NOT EXISTS tender_item (
+    item_id              INTEGER PRIMARY KEY AUTOINCREMENT,
+    tender_id            INTEGER NOT NULL REFERENCES tender(tender_id),
+    numero_item          INTEGER,
+    description          TEXT NOT NULL,
+    quantity             REAL,
+    unit                 TEXT,
+    unit_price_estimated REAL,
+    total_estimated      REAL,
+    is_opme              INTEGER NOT NULL DEFAULT 0,  -- 1 quando MATCH/REVIEW na taxonomia
+    taxonomy_id          INTEGER,
+    taxonomy_path        TEXT,
+    canonical_name       TEXT,
+    classify_decision    TEXT,
+    classify_confidence  REAL
+);
+
+CREATE INDEX IF NOT EXISTS idx_tender_uf       ON tender(uf);
+CREATE INDEX IF NOT EXISTS idx_tender_esfera   ON tender(esfera);
+CREATE INDEX IF NOT EXISTS idx_titem_tender    ON tender_item(tender_id);
+CREATE INDEX IF NOT EXISTS idx_titem_is_opme   ON tender_item(is_opme);
 """
 
 

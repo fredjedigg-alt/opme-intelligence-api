@@ -34,8 +34,12 @@ class ClassifyRequest(BaseModel):
         ],
     )
     document_type: Optional[
-        Literal["cotacao", "contrato", "catalogo", "nota_fiscal", "edital", "desconhecido"]
-    ] = Field(default="desconhecido", description="Tipo documental de origem (opcional).")
+        Literal[
+            "cotacao", "contrato", "catalogo", "nota_fiscal", "edital", "desconhecido"
+        ]
+    ] = Field(
+        default="desconhecido", description="Tipo documental de origem (opcional)."
+    )
 
 
 class EvidenceSpan(BaseModel):
@@ -76,14 +80,17 @@ class ClassifyResponse(BaseModel):
 # --------------------------------------------------------------------------- #
 class BenchmarkRequest(BaseModel):
     description: str = Field(
-        ..., min_length=3, max_length=1000,
+        ...,
+        min_length=3,
+        max_length=1000,
         examples=["stent farmacológico coronário 3.0 x 18 mm"],
     )
     region: Optional[str] = Field(
         default=None, description="Filtra observações por região (ex.: 'Centro-Oeste')."
     )
     reference_price: Optional[float] = Field(
-        default=None, gt=0,
+        default=None,
+        gt=0,
         description="Preço pago/cotado para calcular economia vs. mediana de mercado.",
     )
 
@@ -154,6 +161,112 @@ class ComparabilityResponse(BaseModel):
     critical_differences: list[str] = Field(default_factory=list)
     rationale: str
     confidence: float = Field(..., ge=0, le=1)
+
+
+# --------------------------------------------------------------------------- #
+# Serviço 4 — Radar de Licitações (PNCP)
+# --------------------------------------------------------------------------- #
+class TenderScanRequest(BaseModel):
+    terms: Optional[list[str]] = Field(
+        default=None,
+        description="Termos de busca no PNCP. Se omitido, usa a lista padrão OPME.",
+        examples=[["OPME", "prótese de quadril"]],
+    )
+    uf: Optional[str] = Field(
+        default=None,
+        min_length=2,
+        max_length=2,
+        description="Filtra por UF (ex.: 'GO').",
+    )
+    esfera: Optional[Literal["Federal", "Estadual", "Municipal", "Distrital"]] = Field(
+        default=None, description="Filtra por esfera administrativa."
+    )
+    max_pages: int = Field(
+        default=1,
+        ge=1,
+        le=5,
+        description="Páginas de busca por termo (50 editais/página).",
+    )
+    use_llm: bool = Field(
+        default=False,
+        description="Refina a classificação dos itens com LLM (mais lento; requer chave).",
+    )
+
+
+class TenderScanResponse(BaseModel):
+    scanned_at: str
+    terms_used: list[str]
+    tenders_found: int
+    tenders_new: int
+    tenders_updated: int
+    items_scanned: int
+    items_opme: int
+    opme_estimated_value: float
+    item_fetch_errors: int
+    by_esfera: dict = Field(default_factory=dict)
+    by_uf: dict = Field(default_factory=dict)
+
+
+class TenderOut(BaseModel):
+    tender_id: int
+    pncp_control_number: str
+    title: Optional[str] = None
+    description: Optional[str] = None
+    orgao_nome: Optional[str] = None
+    unidade_nome: Optional[str] = None
+    esfera: Optional[str] = None
+    uf: Optional[str] = None
+    municipio: Optional[str] = None
+    modalidade: Optional[str] = None
+    data_publicacao: Optional[str] = None
+    data_fim_propostas: Optional[str] = None
+    situacao: Optional[str] = None
+    source_url: Optional[str] = None
+    matched_term: Optional[str] = None
+    scanned_at: str
+    items_total: int = 0
+    items_opme: int = 0
+    opme_estimated_value: float = 0.0
+
+
+class TenderListResponse(BaseModel):
+    total: int
+    page: int
+    page_size: int
+    tenders: list[TenderOut] = Field(default_factory=list)
+
+
+class TenderItemBenchmark(BaseModel):
+    market_median: Optional[float] = None
+    sample_count: int = 0
+    delta_pct: Optional[float] = Field(
+        default=None,
+        description="Variação % do valor estimado do edital vs. mediana de mercado.",
+    )
+    verdict: Optional[str] = None
+
+
+class TenderItemOut(BaseModel):
+    item_id: int
+    numero_item: Optional[int] = None
+    description: str
+    quantity: Optional[float] = None
+    unit: Optional[str] = None
+    unit_price_estimated: Optional[float] = None
+    total_estimated: Optional[float] = None
+    is_opme: bool
+    taxonomy_id: Optional[int] = None
+    taxonomy_path: Optional[str] = None
+    canonical_name: Optional[str] = None
+    classify_decision: Optional[str] = None
+    classify_confidence: Optional[float] = None
+    benchmark: Optional[TenderItemBenchmark] = None
+
+
+class TenderItemsResponse(BaseModel):
+    tender_id: int
+    pncp_control_number: str
+    items: list[TenderItemOut] = Field(default_factory=list)
 
 
 # --------------------------------------------------------------------------- #

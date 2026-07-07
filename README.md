@@ -32,8 +32,9 @@ uvicorn app.main:app --reload
 ```
 
 Acesse:
-- **Interface web (uso do dia a dia):** http://127.0.0.1:8000/ — autentica sozinha, sem
-  precisar informar usuário/senha.
+- **Painel web (uso do dia a dia):** http://127.0.0.1:8000/ — autentica sozinha, sem
+  precisar informar usuário/senha. Classificação, benchmark, comparabilidade,
+  análise em lote com export CSV e Radar de Licitações (PNCP).
 - **Documentação interativa (Swagger):** http://127.0.0.1:8000/docs
 - **ReDoc:** http://127.0.0.1:8000/redoc
 - **Health check:** http://127.0.0.1:8000/api/v1/health
@@ -64,15 +65,21 @@ curl -X POST http://127.0.0.1:8000/api/v1/classify \
 
 ---
 
-## 🧠 Serviços de IA (3 endpoints, operações distintas)
+## 🧠 Serviços de IA (4 serviços, operações distintas)
 
 | Endpoint | Operação de IA | O que faz |
 |---|---|---|
 | `POST /api/v1/classify` | **NLP / extração + classificação** | Estrutura uma descrição livre em item OPME + classe taxonômica, com atributos, evidências e confiança. |
 | `POST /api/v1/benchmark` | **Análise / estatística** | Calcula mediana, p25/p75, dispersão (CV), outliers (IQR) e economia potencial vs. mercado. |
 | `POST /api/v1/comparability` | **Decisão / similaridade** | Decide se dois itens são equivalentes para benchmark de preço. |
+| `POST /api/v1/tenders/scan` | **Radar de Licitações (PNCP)** | Varre editais **recebendo propostas** nas 3 esferas (federal/estadual/municipal) no PNCP, persiste com dedupe e classifica cada item do edital para identificar demandas de OPME. |
 
-Endpoints de apoio: `GET /api/v1/health`, `GET /api/v1/taxonomy`, `POST /api/v1/auth/token`.
+Endpoints de apoio: `GET /api/v1/health`, `GET /api/v1/taxonomy`, `POST /api/v1/auth/token`,
+`GET /api/v1/tenders` (repositório local de licitações, com filtros) e
+`GET /api/v1/tenders/{id}/items?benchmark=true` (demandas do edital cruzadas com a mediana de mercado).
+
+> O Radar usa somente dados públicos do PNCP (Lei 14.133/2021), sem autenticação na fonte.
+> É o único serviço que acessa a internet; todos os demais continuam 100% offline.
 
 ### Exemplo — classificação
 
@@ -166,6 +173,8 @@ opme-intelligence-api/
 │   ├── schemas.py         # contratos Pydantic (validação)
 │   ├── errors.py          # exceções + handlers
 │   ├── ai/                # extractor, classifier, benchmark, comparability, llm
+│   ├── services/          # pncp (cliente HTTP) + tender_scan (Radar de Licitações)
+│   ├── static/            # painel web servido em /app
 │   └── api/v1/            # rotas versionadas
 ├── data/seed_opme.py      # taxonomia + observações de preço sintéticas
 ├── tests/                 # suíte pytest

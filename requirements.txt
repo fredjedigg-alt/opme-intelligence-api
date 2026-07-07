@@ -8,6 +8,8 @@ pydantic-settings==2.14.1
 PyJWT==2.13.0
 python-multipart==0.0.32
 python-dotenv==1.2.2
+# Cliente HTTP do Radar de Licitações (integração PNCP).
+httpx==0.28.1
 
 # IA / LLM é OPCIONAL. A API funciona 100% offline (motor de regras + similaridade).
 # Para ativar o enriquecimento por LLM (Claude), descomente a linha abaixo e

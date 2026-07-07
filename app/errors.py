@@ -50,6 +50,13 @@ class RateLimitError(DomainError):
     error_code = "rate_limit_exceeded"
 
 
+class UpstreamError(DomainError):
+    """Falha ao consultar uma fonte externa (ex.: PNCP fora do ar ou lento)."""
+
+    status_code = status.HTTP_502_BAD_GATEWAY
+    error_code = "upstream_unavailable"
+
+
 def _envelope(code: str, message: str, details: dict | None = None) -> dict:
     """Formato único de erro retornado pela API."""
     return {
@@ -68,21 +75,30 @@ def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(DomainError)
     async def _domain_handler(request: Request, exc: DomainError):
         log_with_fields(
-            logger, logging.WARNING, "domain_error",
-            code=exc.error_code, path=request.url.path, detail=exc.message,
+            logger,
+            logging.WARNING,
+            "domain_error",
+            code=exc.error_code,
+            path=request.url.path,
+            detail=exc.message,
         )
         return JSONResponse(
             status_code=exc.status_code,
             content=_envelope(exc.error_code, exc.message, exc.details),
-            headers={"WWW-Authenticate": "Bearer"} if isinstance(exc, AuthError) else None,
+            headers=(
+                {"WWW-Authenticate": "Bearer"} if isinstance(exc, AuthError) else None
+            ),
         )
 
     @app.exception_handler(RequestValidationError)
     async def _validation_handler(request: Request, exc: RequestValidationError):
         # Erros de validação do Pydantic/FastAPI -> 422 padronizado.
         log_with_fields(
-            logger, logging.INFO, "validation_error",
-            path=request.url.path, errors=len(exc.errors()),
+            logger,
+            logging.INFO,
+            "validation_error",
+            path=request.url.path,
+            errors=len(exc.errors()),
         )
         return JSONResponse(
             status_code=422,
