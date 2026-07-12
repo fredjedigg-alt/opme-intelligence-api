@@ -20,6 +20,9 @@ env/
 logs/
 *.log
 
+# Playwright MCP (artefatos de sessão do navegador)
+.playwright-mcp/
+
 # OS / IDE
 .DS_Store
 Thumbs.db
