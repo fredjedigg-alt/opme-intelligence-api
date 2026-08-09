@@ -164,7 +164,10 @@ opme-intelligence-api/
 │   └── api/v1/            # rotas versionadas
 ├── data/seed_opme.py      # taxonomia + observações de preço sintéticas
 ├── tests/                 # suíte pytest
-├── docs/                  # ROTEIRO_EXECUTIVO.md + ARQUITETURA.md
+├── docs/                  # ROTEIRO_EXECUTIVO.md + ARQUITETURA.md + HYPERRESEARCH.md
+├── .claude/               # skills + agentes do hyperresearch (base de pesquisa)
+├── .hyperresearch/        # config do vault de pesquisa
+├── research/notes/        # notas de pesquisa versionadas
 ├── requirements.txt
 └── .env.example
 ```
@@ -178,6 +181,21 @@ opme-intelligence-api/
 3. Reinicie a API. A classificação passa a usar `engine: "regras+similaridade+llm"`.
 
 Sem essas etapas, tudo continua funcionando offline.
+
+---
+
+## 🔎 Base de pesquisa (hyperresearch)
+
+O repositório tem o [hyperresearch](https://github.com/jordan-gibbs/hyperresearch)
+instalado como base de pesquisa dirigida por agente — usado para levantar e manter
+evidência de mercado (regulação, tabelas de referência, literatura de preço em OPME)
+como notas citáveis e versionadas em `research/notes/`.
+
+É **ferramental de pesquisa, não runtime**: nada em `app/` depende dele e a API
+continua rodando offline. Requer `pip install hyperresearch` (Python 3.11–3.13) para
+que o comando `/hyperresearch` funcione no Claude Code.
+
+Ver **[docs/HYPERRESEARCH.md](docs/HYPERRESEARCH.md)**.
 
 ---
 

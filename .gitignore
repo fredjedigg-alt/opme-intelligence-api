@@ -25,3 +25,12 @@ logs/
 Thumbs.db
 .vscode/
 .idea/
+
+# hyperresearch — artefatos gerados em tempo de execução
+# (a configuração versionada é .hyperresearch/config.toml + .hyperresearch/hook.js)
+.hyperresearch/exports/
+research/runs/
+research/temp/
+research/raw/
+research/index/
+research/assets/
