@@ -303,6 +303,10 @@
 
 <script>
 const API = "/api/v1";
+// Credencial de demonstração documentada no README. O painel roda em 127.0.0.1 e
+// autentica sozinho com ela; o formulário de login continua como fallback.
+const DEMO_USER = "atlas";
+const DEMO_PASS = "atlas123";
 let token = sessionStorage.getItem("opme_token") || null;
 let batchRows = [];
 
@@ -329,9 +333,23 @@ function confBar(c) {
 function errBox(el, msg) { el.innerHTML = `<div class="error-box">${esc(msg)}</div>`; }
 
 async function apiFetch(path, opts = {}, retries = 2) {
-  const headers = Object.assign({ "Authorization": "Bearer " + token }, opts.headers || {});
-  const res = await fetch(API + path, Object.assign({}, opts, { headers }));
-  if (res.status === 401) { logout(); throw new Error("Sessão expirada. Faça login novamente."); }
+  await ensureToken(false);
+  const send = () => {
+    const headers = Object.assign({ "Authorization": "Bearer " + token }, opts.headers || {});
+    return fetch(API + path, Object.assign({}, opts, { headers }));
+  };
+  let res = await send();
+  // Token expirado: renova em silêncio e repete uma vez antes de desistir.
+  if (res.status === 401) {
+    try {
+      await ensureToken(true);
+      res = await send();
+    } catch {
+      logout();
+      throw new Error("Sessão expirada. Faça login novamente.");
+    }
+    if (res.status === 401) { logout(); throw new Error("Sessão expirada. Faça login novamente."); }
+  }
   if (res.status === 429 && retries > 0) {
     await sleep(5000);
     return apiFetch(path, opts, retries - 1);
@@ -348,6 +366,19 @@ const postJson = (path, data) => apiFetch(path, {
 });
 
 /* ---------------- auth ---------------- */
+// Obtém um token sem passar pela tela de login. `force` descarta o token atual
+// (usado quando a API devolve 401 por expiração).
+async function ensureToken(force) {
+  if (token && !force) return token;
+  const form = new URLSearchParams({ username: DEMO_USER, password: DEMO_PASS });
+  const res = await fetch(API + "/auth/token", { method: "POST", body: form });
+  if (!res.ok) throw new Error("Falha ao autenticar na API.");
+  const body = await res.json();
+  token = body.access_token;
+  sessionStorage.setItem("opme_token", token);
+  return token;
+}
+
 async function doLogin(e) {
   e.preventDefault();
   $("loginError").innerHTML = "";
@@ -700,10 +731,12 @@ async function toggleTenderItems(tenderId) {
 
 /* ---------------- init ---------------- */
 $("loginForm").addEventListener("submit", doLogin);
-if (token) {
-  // Valida o token guardado contra a API antes de liberar o painel.
-  apiFetch("/taxonomy").then(showApp).catch(() => logout());
-}
+// Autentica em segundo plano e abre o painel direto. Se a API recusar a
+// credencial de demonstração, cai na tela de login em vez de travar.
+ensureToken(false)
+  .then(() => apiFetch("/taxonomy"))
+  .then(showApp)
+  .catch(() => logout());
 </script>
 </body>
 </html>

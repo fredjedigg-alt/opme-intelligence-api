@@ -15,6 +15,7 @@ env/
 # Banco de dados local (recriado pelo seed)
 *.db
 *.db-journal
+*.db.bak-*
 
 # Logs
 logs/
