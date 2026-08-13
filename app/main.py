@@ -9,8 +9,11 @@ import logging
 import time
 import uuid
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, Request
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from . import __version__
 from .api.v1.router import api_router
@@ -71,9 +74,13 @@ async def request_context(request: Request, call_next):
     elapsed_ms = round((time.perf_counter() - start) * 1000, 2)
     response.headers["X-Request-ID"] = rid
     log_with_fields(
-        logger, logging.INFO, "http_access",
-        method=request.method, path=request.url.path,
-        status=response.status_code, latency_ms=elapsed_ms,
+        logger,
+        logging.INFO,
+        "http_access",
+        method=request.method,
+        path=request.url.path,
+        status=response.status_code,
+        latency_ms=elapsed_ms,
     )
     return response
 
@@ -81,12 +88,14 @@ async def request_context(request: Request, call_next):
 # Monta a v1 sob o prefixo versionado.
 app.include_router(api_router, prefix=settings.api_v1_prefix)
 
+STATIC_DIR = Path(__file__).parent / "static"
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
-@app.get("/", tags=["Metadados"], summary="Raiz — informações da API")
+
+@app.get("/", include_in_schema=False, summary="Interface web")
 def root():
-    return {
-        "name": settings.app_name,
-        "version": __version__,
-        "docs": "/docs",
-        "health": f"{settings.api_v1_prefix}/health",
-    }
+    """Serve a interface web (classificação, benchmark e comparabilidade).
+
+    A documentação interativa da API continua em /docs e /redoc.
+    """
+    return FileResponse(STATIC_DIR / "index.html")

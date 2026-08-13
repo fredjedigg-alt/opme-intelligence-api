@@ -4,7 +4,8 @@
 def test_root(client):
     resp = client.get("/")
     assert resp.status_code == 200
-    assert resp.json()["docs"] == "/docs"
+    assert "text/html" in resp.headers["content-type"]
+    assert "OPME Intelligence" in resp.text
 
 
 def test_health_public(client):

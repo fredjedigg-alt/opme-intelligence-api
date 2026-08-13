@@ -32,18 +32,23 @@ uvicorn app.main:app --reload
 ```
 
 Acesse:
+- **Interface web (uso do dia a dia):** http://127.0.0.1:8000/ — autentica sozinha, sem
+  precisar informar usuário/senha.
 - **Documentação interativa (Swagger):** http://127.0.0.1:8000/docs
 - **ReDoc:** http://127.0.0.1:8000/redoc
 - **Health check:** http://127.0.0.1:8000/api/v1/health
 
-Credenciais de demonstração: **usuário `atlas` / senha `atlas123`**.
+Credenciais de demonstração (só necessárias no Swagger ou via `curl`): **usuário
+`atlas` / senha `atlas123`**.
 
 ---
 
 ## 🔐 Autenticação (em 10 segundos)
 
-Todos os endpoints de IA exigem **Bearer Token (JWT)**. Pelo Swagger, clique em
-**Authorize** e informe `atlas` / `atlas123`. Via terminal:
+Todos os endpoints de IA exigem **Bearer Token (JWT)**. A interface web (`/`) já
+autentica em segundo plano com a credencial de demonstração — não é preciso fazer
+login manualmente. Pelo Swagger, clique em **Authorize** e informe `atlas` /
+`atlas123`. Via terminal:
 
 ```bash
 # 1. Obter token

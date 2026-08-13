@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OPME Intelligence</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%232a78d6%22/><text x=%2250%22 y=%2266%22 font-size=%2258%22 font-family=%22system-ui,sans-serif%22 font-weight=%22700%22 fill=%22white%22 text-anchor=%22middle%22>O</text></svg>">
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --surface-2:      #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --border:         rgba(11,11,11,0.10);
+    --gridline:       #e1e0d9;
+    --series-blue:    #2a78d6;
+    --seq-100:        #cde2fb;
+    --seq-400:        #3987e5;
+    --status-good:     #0ca30c;
+    --status-warning:  #fab219;
+    --status-serious:  #ec835a;
+    --status-critical: #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --surface-2:      #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --border:         rgba(255,255,255,0.10);
+      --gridline:       #2c2c2a;
+      --series-blue:    #3987e5;
+      --seq-100:        #184f95;
+      --seq-400:        #3987e5;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--surface-2);
+    color: var(--text-primary);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  header h1 { font-size: 18px; margin: 0; font-weight: 650; }
+  header .sub { color: var(--text-secondary); font-size: 13px; }
+  #health { font-size: 12px; color: var(--text-muted); }
+  #health.ok::before { content: "● "; color: var(--status-good); }
+  #health.err::before { content: "● "; color: var(--status-critical); }
+  nav.tabs {
+    display: flex;
+    gap: 4px;
+    padding: 12px 24px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  nav.tabs button {
+    appearance: none;
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    font: inherit;
+    font-weight: 600;
+    padding: 10px 14px;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+  }
+  nav.tabs button.active {
+    color: var(--text-primary);
+    background: var(--surface-1);
+    box-shadow: inset 0 -2px 0 var(--series-blue);
+  }
+  main { max-width: 880px; margin: 0 auto; padding: 24px; }
+  section.panel { display: none; }
+  section.panel.active { display: block; }
+  .card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+  }
+  .card + .card { margin-top: 14px; }
+  .field-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+  button.example {
+    appearance: none;
+    border: none;
+    background: none;
+    color: var(--series-blue);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+  }
+  button.example:hover { text-decoration: underline; }
+  textarea, input {
+    width: 100%;
+    font: inherit;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface-2);
+    color: var(--text-primary);
+    resize: vertical;
+  }
+  textarea { min-height: 64px; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .row > div { flex: 1; min-width: 180px; }
+  .field { margin-bottom: 12px; }
+  button.run {
+    appearance: none;
+    border: none;
+    background: var(--series-blue);
+    color: #fff;
+    font: inherit;
+    font-weight: 650;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  button.run:disabled { opacity: 0.55; cursor: default; }
+  button.run:hover:not(:disabled) { filter: brightness(1.06); }
+  .result { margin-top: 16px; }
+  .headline { font-size: 17px; font-weight: 650; margin: 0 0 4px; }
+  .taxpath { color: var(--text-secondary); font-size: 13px; margin: 0 0 12px; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12.5px;
+    font-weight: 650;
+    padding: 3px 9px;
+    border-radius: 999px;
+    color: #fff;
+  }
+  .badge.good { background: var(--status-good); }
+  .badge.warning { background: var(--status-warning); color: #241a00; }
+  .badge.serious { background: var(--status-serious); }
+  .badge.critical { background: var(--status-critical); }
+  dl.attrs { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 12px 0; font-size: 13.5px; }
+  dl.attrs dt { color: var(--text-muted); }
+  dl.attrs dd { margin: 0; }
+  .evidence { margin-top: 12px; font-size: 13px; }
+  .evidence ul { margin: 6px 0 0; padding-left: 18px; color: var(--text-secondary); }
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 10px; margin: 14px 0; text-align: center; }
+  .stat-grid .stat { background: var(--surface-2); border-radius: 8px; padding: 8px 4px; }
+  .stat-grid .stat b { display: block; font-size: 15px; }
+  .stat-grid .stat span { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .03em; }
+  .range-wrap { margin: 18px 0 10px; }
+  .range-track { position: relative; height: 10px; border-radius: 6px; background: var(--gridline); }
+  .range-fill { position: absolute; top: 0; bottom: 0; border-radius: 6px; background: var(--seq-100); }
+  .range-mark { position: absolute; top: -5px; width: 3px; height: 20px; border-radius: 2px; background: var(--series-blue); }
+  .range-mark.ref { background: var(--status-critical); width: 3px; }
+  .range-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+  table.groups { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 6px; }
+  table.groups th { text-align: left; color: var(--text-muted); font-weight: 600; font-size: 11px; text-transform: uppercase; padding: 4px 8px 4px 0; border-bottom: 1px solid var(--gridline); }
+  table.groups td { padding: 6px 8px 6px 0; border-bottom: 1px solid var(--gridline); font-variant-numeric: tabular-nums; }
+  .cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .saving { margin-top: 14px; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); }
+  .saving.opp { background: color-mix(in srgb, var(--status-warning) 12%, var(--surface-1)); }
+  .saving.ok { background: color-mix(in srgb, var(--status-good) 12%, var(--surface-1)); }
+  .muted-note { color: var(--text-muted); font-size: 13px; margin-top: 10px; }
+  .error { color: var(--status-critical); font-size: 13.5px; margin-top: 12px; }
+  .empty { color: var(--text-muted); font-size: 13.5px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>OPME Intelligence</h1>
+    <div class="sub">Inteligência de mercado para Órteses, Próteses e Materiais Especiais — Atlas Health</div>
+  </div>
+  <span id="health">verificando…</span>
+</header>
+
+<nav class="tabs">
+  <button data-tab="classify" class="active">Classificar</button>
+  <button data-tab="benchmark">Benchmark de preço</button>
+  <button data-tab="comparability">Comparabilidade</button>
+</nav>
+
+<main>
+
+  <section id="tab-classify" class="panel active">
+    <div class="card">
+      <div class="field">
+        <div class="field-head">
+          <label for="cl-desc">Descrição livre do item (cotação, nota fiscal, catálogo…)</label>
+          <button type="button" class="example" id="cl-example">usar exemplo</button>
+        </div>
+        <textarea id="cl-desc" placeholder="Ex.: Placa bloqueada distal rádio volar 2.4 mm titânio 6 furos, estéril, ref XZ-244, fabricante OrthoMed"></textarea>
+      </div>
+      <button class="run" id="cl-run">Classificar</button>
+    </div>
+    <div id="cl-result" class="result"></div>
+  </section>
+
+  <section id="tab-benchmark" class="panel">
+    <div class="card">
+      <div class="field">
+        <div class="field-head">
+          <label for="bm-desc">Descrição do item</label>
+          <button type="button" class="example" id="bm-example">usar exemplo</button>
+        </div>
+        <textarea id="bm-desc" placeholder="Ex.: stent farmacológico coronário 3.0 x 18 mm"></textarea>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="bm-price">Preço de referência (R$, opcional)</label>
+          <input id="bm-price" type="number" step="0.01" min="0" placeholder="Ex.: 7000">
+        </div>
+        <div class="field">
+          <label for="bm-region">Região (opcional)</label>
+          <input id="bm-region" type="text" placeholder="Ex.: Centro-Oeste">
+        </div>
+      </div>
+      <button class="run" id="bm-run">Calcular benchmark</button>
+    </div>
+    <div id="bm-result" class="result"></div>
+  </section>
+
+  <section id="tab-comparability" class="panel">
+    <div class="card">
+      <div class="field-head" style="margin-bottom: 4px">
+        <span></span>
+        <button type="button" class="example" id="cp-example">usar exemplo</button>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="cp-a">Item A</label>
+          <textarea id="cp-a" placeholder="Descrição do primeiro item"></textarea>
+        </div>
+        <div class="field">
+          <label for="cp-b">Item B</label>
+          <textarea id="cp-b" placeholder="Descrição do segundo item"></textarea>
+        </div>
+      </div>
+      <button class="run" id="cp-run">Comparar</button>
+    </div>
+    <div id="cp-result" class="result"></div>
+  </section>
+
+</main>
+
+<script>
+const API = "/api/v1";
+let token = null;
+
+// Sessão de uso pessoal/local: autentica em segundo plano com a credencial de
+// demonstração documentada no README, sem expor tela de login ao usuário.
+async function ensureToken(force) {
+  if (token && !force) return token;
+  const res = await fetch(`${API}/auth/token`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: "username=atlas&password=atlas123",
+  });
+  if (!res.ok) throw new Error("Falha ao autenticar na API.");
+  const data = await res.json();
+  token = data.access_token;
+  return token;
+}
+
+async function apiPost(path, body) {
+  await ensureToken(false);
+  let res = await fetch(`${API}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+    body: JSON.stringify(body),
+  });
+  if (res.status === 401) {
+    await ensureToken(true);
+    res = await fetch(`${API}${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+      body: JSON.stringify(body),
+    });
+  }
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.error?.message || data?.detail || "Erro ao chamar a API.");
+  return data;
+}
+
+function el(html) {
+  const t = document.createElement("template");
+  t.innerHTML = html.trim();
+  return t.content.firstChild;
+}
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
+}
+function pct(n) { return `${(n * 100).toFixed(0)}%`; }
+function money(n) { return n == null ? "—" : n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }); }
+
+function statusBadge(kind, label, icon) {
+  return `<span class="badge ${kind}">${icon} ${esc(label)}</span>`;
+}
+const DECISION_BADGE = {
+  MATCH:         () => statusBadge("good", "Match", "✓"),
+  REVIEW:        () => statusBadge("warning", "Revisar", "⚠"),
+  NO_MATCH:      () => statusBadge("critical", "Não encontrado", "✕"),
+  COMPARABLE:    () => statusBadge("good", "Comparável", "✓"),
+  NOT_COMPARABLE:() => statusBadge("critical", "Não comparável", "✕"),
+};
+const DISPERSION_BADGE = {
+  baixa: () => statusBadge("good", "Dispersão baixa", "●"),
+  media: () => statusBadge("warning", "Dispersão média", "●"),
+  alta:  () => statusBadge("critical", "Dispersão alta", "●"),
+};
+
+// --- Tabs ---
+document.querySelectorAll("nav.tabs button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("nav.tabs button").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll("section.panel").forEach(p => p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(`tab-${btn.dataset.tab}`).classList.add("active");
+  });
+});
+
+// --- Exemplos de um clique ---
+document.getElementById("cl-example").addEventListener("click", () => {
+  document.getElementById("cl-desc").value =
+    "Placa bloqueada distal rádio volar 2.4 mm titânio 6 furos, estéril, ref XZ-244, fabricante OrthoMed";
+});
+document.getElementById("bm-example").addEventListener("click", () => {
+  document.getElementById("bm-desc").value = "stent farmacológico coronário 3.0 x 18 mm";
+  document.getElementById("bm-price").value = "7000";
+});
+document.getElementById("cp-example").addEventListener("click", () => {
+  document.getElementById("cp-a").value = "Placa bloqueada distal rádio volar 2.4mm titânio 6 furos";
+  document.getElementById("cp-b").value = "Placa bloqueada distal rádio volar 2.4mm aço inox 8 furos";
+});
+
+// --- Health check ---
+(async () => {
+  const badge = document.getElementById("health");
+  try {
+    const res = await fetch(`${API}/health`);
+    const data = await res.json();
+    badge.textContent = `online · v${data.version} · ${data.taxonomy_nodes} classes · ${data.price_observations} observações de preço`;
+    badge.className = "ok";
+  } catch {
+    badge.textContent = "API indisponível";
+    badge.className = "err";
+  }
+})();
+
+async function runAction(buttonId, fn) {
+  const btn = document.getElementById(buttonId);
+  btn.disabled = true;
+  const original = btn.textContent;
+  btn.textContent = "Processando…";
+  try {
+    await fn();
+  } finally {
+    btn.disabled = false;
+    btn.textContent = original;
+  }
+}
+
+// --- Classificar ---
+document.getElementById("cl-run").addEventListener("click", () => runAction("cl-run", async () => {
+  const out = document.getElementById("cl-result");
+  const description = document.getElementById("cl-desc").value.trim();
+  if (description.length < 3) { out.innerHTML = `<p class="error">Descreva o item com pelo menos 3 caracteres.</p>`; return; }
+  out.innerHTML = "";
+  try {
+    const r = await apiPost("/classify", { description });
+    const dims = Object.entries(r.dimensions || {}).map(([k, v]) => `${k}: ${v}`).join(", ") || "—";
+    out.appendChild(el(`
+      <div class="card">
+        <p class="headline">${esc(r.canonical_name)}</p>
+        <p class="taxpath">${esc(r.taxonomy_path || "sem classe correspondente")}</p>
+        ${DECISION_BADGE[r.decision]()} <span class="badge" style="background:var(--surface-2);color:var(--text-secondary)">confiança ${pct(r.confidence)}</span>
+        <dl class="attrs">
+          <dt>Material</dt><dd>${esc(r.material || "—")}</dd>
+          <dt>Estéril</dt><dd>${r.sterile === null ? "—" : (r.sterile ? "sim" : "não")}</dd>
+          <dt>Dimensões</dt><dd>${esc(dims)}</dd>
+          <dt>Código de referência</dt><dd>${esc(r.reference_code || "—")}</dd>
+          <dt>Fabricante</dt><dd>${esc(r.manufacturer || "—")}</dd>
+          <dt>Motor</dt><dd>${esc(r.engine)}</dd>
+        </dl>
+        ${r.ambiguity_note ? `<p class="muted-note">${esc(r.ambiguity_note)}</p>` : ""}
+        ${(r.evidence || []).length ? `<div class="evidence"><strong>Evidências extraídas</strong><ul>${r.evidence.map(e => `<li><b>${esc(e.field)}:</b> "${esc(e.text)}"</li>`).join("")}</ul></div>` : ""}
+        ${(r.candidates || []).length ? `<div class="evidence"><strong>Outras classes candidatas</strong><ul>${r.candidates.map(c => `<li>${esc(c.path)} — ${pct(c.score)}</li>`).join("")}</ul></div>` : ""}
+      </div>
+    `));
+  } catch (e) {
+    out.innerHTML = `<p class="error">${esc(e.message)}</p>`;
+  }
+}));
+
+// --- Benchmark ---
+document.getElementById("bm-run").addEventListener("click", () => runAction("bm-run", async () => {
+  const out = document.getElementById("bm-result");
+  const description = document.getElementById("bm-desc").value.trim();
+  const priceRaw = document.getElementById("bm-price").value;
+  const region = document.getElementById("bm-region").value.trim();
+  if (description.length < 3) { out.innerHTML = `<p class="error">Descreva o item com pelo menos 3 caracteres.</p>`; return; }
+  out.innerHTML = "";
+  try {
+    const r = await apiPost("/benchmark", {
+      description,
+      region: region || null,
+      reference_price: priceRaw ? Number(priceRaw) : null,
+    });
+    let statsHtml = `<p class="empty">${esc(r.note || "Sem observações de preço comparáveis para este item.")}</p>`;
+    if (r.stats) {
+      const s = r.stats;
+      const span = s.max - s.min || 1;
+      const posOf = v => ((v - s.min) / span) * 100;
+      const fillFrom = posOf(s.p25), fillTo = posOf(s.p75);
+      let refMark = "";
+      if (r.saving_opportunity) {
+        const p = Math.min(100, Math.max(0, posOf(r.saving_opportunity.reference_price)));
+        refMark = `<div class="range-mark ref" style="left:calc(${p}% - 1.5px)" title="Preço de referência"></div>`;
+      }
+      statsHtml = `
+        <div class="stat-grid">
+          <div class="stat"><b>${s.count}</b><span>observações</span></div>
+          <div class="stat"><b>${money(s.median)}</b><span>mediana</span></div>
+          <div class="stat"><b>${money(s.p25)}</b><span>p25</span></div>
+          <div class="stat"><b>${money(s.p75)}</b><span>p75</span></div>
+          <div class="stat"><b>${(s.coefficient_of_variation * 100).toFixed(0)}%</b><span>CV</span></div>
+        </div>
+        <div class="range-wrap">
+          <div class="range-track">
+            <div class="range-fill" style="left:${fillFrom}%;right:${100 - fillTo}%"></div>
+            <div class="range-mark" style="left:calc(${posOf(s.median)}% - 1.5px)" title="Mediana"></div>
+            ${refMark}
+          </div>
+          <div class="range-labels"><span>${money(s.min)}</span><span>${money(s.max)}</span></div>
+        </div>
+        ${r.dispersion_level ? DISPERSION_BADGE[r.dispersion_level]() : ""}
+      `;
+    }
+    const groupTable = (title, rows) => !rows.length ? "" : `
+      <div>
+        <strong style="font-size:13px">${title}</strong>
+        <table class="groups"><thead><tr><th>Chave</th><th>N</th><th>Mediana</th></tr></thead>
+        <tbody>${rows.map(g => `<tr><td>${esc(g.key)}</td><td>${g.count}</td><td>${money(g.median_price)}</td></tr>`).join("")}</tbody></table>
+      </div>`;
+    let savingHtml = "";
+    if (r.saving_opportunity) {
+      const so = r.saving_opportunity;
+      const isOpp = so.potential_saving_pct > 0;
+      savingHtml = `
+        <div class="saving ${isOpp ? "opp" : "ok"}">
+          ${statusBadge(isOpp ? "warning" : "good", isOpp ? `Oportunidade de economia: ${so.potential_saving_pct.toFixed(1)}%` : "Preço em linha com o mercado", isOpp ? "⚠" : "✓")}
+          <p style="margin:8px 0 0">${esc(so.verdict)} Referência: ${money(so.reference_price)} · Mediana de mercado: ${money(so.market_median)} · Economia potencial: ${money(so.potential_saving_abs)}.</p>
+        </div>`;
+    }
+    let outliersHtml = "";
+    if ((r.outliers || []).length) {
+      outliersHtml = `<div class="evidence"><strong>Outliers</strong><ul>${r.outliers.map(o => `<li>${esc(o.supplier)} (${esc(o.region)}) — ${money(o.normalized_price)} — ${esc(o.reason)}</li>`).join("")}</ul></div>`;
+    }
+    out.appendChild(el(`
+      <div class="card">
+        <p class="taxpath">${esc(r.matched_taxonomy_path || r.comparable_basis)} · confiança da classificação ${pct(r.classification_confidence)}</p>
+        ${statsHtml}
+        ${savingHtml}
+        <div class="cols-2">
+          ${groupTable("Por fornecedor", r.by_supplier)}
+          ${groupTable("Por região", r.by_region)}
+        </div>
+        ${outliersHtml}
+      </div>
+    `));
+  } catch (e) {
+    out.innerHTML = `<p class="error">${esc(e.message)}</p>`;
+  }
+}));
+
+// --- Comparabilidade ---
+document.getElementById("cp-run").addEventListener("click", () => runAction("cp-run", async () => {
+  const out = document.getElementById("cp-result");
+  const item_a = document.getElementById("cp-a").value.trim();
+  const item_b = document.getElementById("cp-b").value.trim();
+  if (item_a.length < 3 || item_b.length < 3) { out.innerHTML = `<p class="error">Descreva os dois itens com pelo menos 3 caracteres.</p>`; return; }
+  out.innerHTML = "";
+  try {
+    const r = await apiPost("/comparability", { item_a, item_b });
+    out.appendChild(el(`
+      <div class="card">
+        <div class="cols-2">
+          <div><p class="headline" style="font-size:15px">${esc(r.item_a_canonical)}</p><p class="taxpath">${esc(r.taxonomy_a || "—")}</p></div>
+          <div><p class="headline" style="font-size:15px">${esc(r.item_b_canonical)}</p><p class="taxpath">${esc(r.taxonomy_b || "—")}</p></div>
+        </div>
+        ${DECISION_BADGE[r.decision] ? DECISION_BADGE[r.decision]() : statusBadge("warning", "Revisar", "⚠")}
+        <span class="badge" style="background:var(--surface-2);color:var(--text-secondary)">similaridade de atributos ${pct(r.attribute_similarity)}</span>
+        <span class="badge" style="background:var(--surface-2);color:var(--text-secondary)">confiança ${pct(r.confidence)}</span>
+        <p style="margin-top:12px">${esc(r.rationale)}</p>
+        ${(r.critical_differences || []).length ? `<div class="evidence"><strong>Diferenças críticas</strong><ul>${r.critical_differences.map(d => `<li>${esc(d)}</li>`).join("")}</ul></div>` : ""}
+      </div>
+    `));
+  } catch (e) {
+    out.innerHTML = `<p class="error">${esc(e.message)}</p>`;
+  }
+}));
+</script>
+</body>
+</html>
