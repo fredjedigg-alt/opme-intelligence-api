@@ -102,9 +102,18 @@ def get_db_path() -> str:
 
 
 def connect() -> sqlite3.Connection:
-    """Abre uma conexão com row factory de dicionário e FKs habilitadas."""
-    conn = sqlite3.connect(get_db_path())
+    """Abre uma conexão com row factory de dicionário e FKs habilitadas.
+
+    Usa WAL porque a varredura do PNCP (`/tenders/scan`) mantém uma transação de
+    escrita aberta por dezenas de segundos; no journal padrão isso bloqueia toda
+    leitura concorrente e a API inteira passa a devolver 500 "database is
+    locked". Em WAL os leitores não esperam o escritor. O `busy_timeout` cobre o
+    caso de dois escritores simultâneos, que continuam serializados.
+    """
+    conn = sqlite3.connect(get_db_path(), timeout=30.0)
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA journal_mode = WAL;")
+    conn.execute("PRAGMA busy_timeout = 30000;")
     conn.execute("PRAGMA foreign_keys = ON;")
     return conn
 
