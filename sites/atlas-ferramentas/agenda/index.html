@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de agenda ociosa | ATLAS - Gestão em Saúde</title>
+<meta name="description" content="Quanto da agenda que você já paga vira atendimento? Calcule horários vazios e faltas com os seus números.">
+<meta property="og:title" content="Agenda ociosa e faltas · ATLAS">
+<meta property="og:description" content="Quanto da agenda que você já paga vira atendimento? Calcule horários vazios e faltas com os seus números.">
+<meta property="og:image" content="https://atlasgestaosaude.com.br/og-image.png">
+<link rel="icon" href="https://atlasgestaosaude.com.br/favicon.svg">
+<link rel="stylesheet" href="/assets/atlas.css">
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <a href="/" data-carry aria-label="ATLAS - Gestão em Saúde, ferramentas"><img src="https://atlasgestaosaude.com.br/marca/atlas-logo-horizontal-cor-fundo-escuro.svg" alt="ATLAS - Gestão em Saúde" width="150" height="30"></a>
+    <nav aria-label="Principal">
+      <a href="/" data-carry>Ferramentas</a>
+      <a href="https://atlasgestaosaude.com.br/raio-x/">Raio-X</a>
+      <a href="https://atlasgestaosaude.com.br/">Site ATLAS</a>
+    </nav>
+  </div>
+</header>
+
+<main class="calc-wrap">
+  <div class="calc-head">
+    <p class="eyebrow">Ferramenta gratuita · agenda e capacidade</p>
+    <h1>Quanto da agenda que você já paga vira atendimento?</h1>
+    <p>Sala, equipe e profissional custam o mesmo com o horário cheio ou vazio. Esta conta mostra quanto da capacidade instalada se perde em horário nunca marcado e em falta do paciente. Troque os números do exemplo pelos seus.</p>
+  </div>
+
+  <div class="calc-grid">
+    <section class="panel" id="inputs" aria-labelledby="in-title">
+      <h2 id="in-title">Seus números</h2>
+      <p class="panel-note">Os valores iniciais são um exemplo. Considere só atendimentos agendados (consultas, exames, procedimentos).</p>
+
+      <div class="two">
+        <div class="field">
+          <label for="prof">Profissionais atendendo</label>
+          <div class="input-unit"><input id="prof" type="number" inputmode="numeric" min="0" step="1" value="4"><span>pessoas</span></div>
+        </div>
+        <div class="field">
+          <label for="horas">Agenda aberta de cada um</label>
+          <div class="input-unit"><input id="horas" type="number" inputmode="decimal" min="0" step="1" value="30"><span>h/semana</span></div>
+        </div>
+      </div>
+
+      <div class="two">
+        <div class="field">
+          <label for="dur">Duração média do horário</label>
+          <div class="input-unit"><input id="dur" type="number" inputmode="numeric" min="5" step="5" value="30"><span>min</span></div>
+        </div>
+        <div class="field">
+          <label for="ticket">Valor médio por atendimento</label>
+          <div class="input-unit"><span>R$</span><input id="ticket" type="number" inputmode="decimal" min="0" step="10" value="250"></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="ocup">De cada 100 horários abertos, quantos são marcados</label>
+        <div class="input-unit"><input id="ocup" type="number" inputmode="numeric" min="0" max="100" step="1" value="75"><span>de 100</span></div>
+      </div>
+
+      <div class="field">
+        <label for="faltas">De cada 100 marcados, quantos o paciente não comparece</label>
+        <div class="input-unit"><input id="faltas" type="number" inputmode="numeric" min="0" max="100" step="1" value="12"><span>de 100</span></div>
+        <p class="hint">Falta e cancelamento em cima da hora, que não dá tempo de reocupar.</p>
+      </div>
+
+      <div class="field">
+        <label for="espera">Dias de espera para o primeiro horário disponível</label>
+        <div class="input-unit"><input id="espera" type="number" inputmode="numeric" min="0" step="1" value="9"><span>dias</span></div>
+        <p class="hint">Serve para ler o resultado: espera longa com agenda vazia indica problema de processo.</p>
+      </div>
+    </section>
+
+    <section class="result" aria-labelledby="out-title" aria-live="polite">
+      <h2 id="out-title" class="hp">Resultado</h2>
+      <div class="waterline">
+        <div class="above">
+          <p class="zone-label">O que se vê</p>
+          <p class="big"><output id="o-util">0%</output><small>da capacidade vira atendimento</small></p>
+          <p class="panel-note" id="o-util-det">—</p>
+        </div>
+        <div class="below">
+          <p class="zone-label">O que custa</p>
+          <p class="big"><output id="o-perda-mes">R$ 0</output><small>por mês em capacidade paga e não usada</small></p>
+          <p id="o-perda-ano">—</p>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:16px">
+        <div class="bar" role="img" id="bar" aria-label="Uso da agenda">
+          <i class="b1" id="bar-real"></i><i class="b2" id="bar-falta"></i><i class="b3" id="bar-vazio"></i>
+        </div>
+        <div class="legend">
+          <span style="--c: var(--navy)">Atendido</span>
+          <span style="--c: var(--gold)">Marcado e o paciente faltou</span>
+          <span style="--c: #B8C3CF">Nunca marcado</span>
+        </div>
+        <ul class="lines">
+          <li><span>Horários disponíveis por mês</span><span class="val" id="l-slots">—</span><span class="nature n-calc"><b>cálculo</b>profissionais × horas × (60 ÷ duração) × 4,33 semanas</span></li>
+          <li><span>Atendimentos realizados por mês</span><span class="val" id="l-real">—</span><span class="nature n-calc"><b>cálculo</b>horários × % marcados × (1 − % faltas)</span></li>
+          <li><span>Perdidos por falta, por mês</span><span class="val" id="l-falta">—</span><span class="nature n-calc"><b>cálculo</b>horários marcados em que o paciente não veio × valor médio</span></li>
+          <li><span>Nunca marcados, por mês</span><span class="val" id="l-vazio">—</span><span class="nature n-calc"><b>cálculo</b>horários vazios × valor médio</span></li>
+          <li><span>Se as faltas caíssem pela metade, por ano</span><span class="val" id="l-pot">—</span><span class="nature n-est"><b>estimativa</b>supõe o mesmo valor médio e que o horário recuperado é atendido</span></li>
+        </ul>
+        <p class="insight" id="insight">—</p>
+        <p class="fine">Receita potencial, não lucro: ocupar horário exige demanda e tem custo variável. Calculado só com os números que você informou.</p>
+      </div>
+    </section>
+  </div>
+
+  <section class="lead" aria-labelledby="lead-title">
+    <div>
+      <p class="eyebrow">Leitura gratuita do resultado</p>
+      <h2 id="lead-title">Quer saber o que está por trás deste número?</h2>
+    </div>
+    <p class="panel-note">Envie o resultado e, em até 1 dia útil, a ATLAS devolve uma leitura com as causas mais prováveis e o que conferir primeiro. Nenhum dado de paciente. Não vendemos software.</p>
+    <form id="lead" name="calc-agenda" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+      <input type="hidden" name="form-name" value="calc-agenda">
+      <input type="hidden" name="subject" value="Lead · Calculadora de agenda">
+      <input type="hidden" name="origem" value="direto">
+      <p class="hp"><label>Não preencha: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+      <div class="two">
+        <div class="field"><label for="f-nome">Nome</label><input id="f-nome" name="nome" type="text" autocomplete="name" required></div>
+        <div class="field"><label for="f-contato">WhatsApp ou e-mail</label><input id="f-contato" name="contato" type="text" autocomplete="email" required></div>
+      </div>
+      <div class="two">
+        <div class="field"><label for="f-inst">Instituição <span class="hint">(opcional)</span></label><input id="f-inst" name="instituicao" type="text" autocomplete="organization"></div>
+        <div class="field"><label for="f-cidade">Cidade / UF <span class="hint">(opcional)</span></label><input id="f-cidade" name="cidade" type="text" autocomplete="address-level2"></div>
+      </div>
+      <div class="field">
+        <label for="f-papel">Seu papel</label>
+        <select id="f-papel" name="papel" required>
+          <option value="">Selecione</option>
+          <option>Sócio-gestor</option>
+          <option>Diretor clínico ou técnico</option>
+          <option>Administrador ou gerente</option>
+          <option>Faturamento</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <textarea name="resumo" hidden aria-hidden="true"></textarea>
+      <label class="consent"><input type="checkbox" name="consentimento_tratamento" value="sim" required><span><strong>Autorizo</strong> a ATLAS - Gestão em Saúde a tratar estes dados e o resultado da calculadora para responder ao meu contato. Eles ficam guardados por até 12 meses, e posso pedir acesso, correção ou exclusão a qualquer momento. O serviço de formulários registra automaticamente o endereço IP e o tipo de navegador de cada envio. <a href="https://atlasgestaosaude.com.br/privacidade">Política de privacidade</a>. (obrigatório)</span></label>
+      <label class="consent"><input type="checkbox" name="consentimento_transferencia" value="sim" required><span><strong>Transferência internacional:</strong> autorizo, de forma específica, que estes dados sejam armazenados no serviço de formulários usado pela ATLAS, com servidores fora do Brasil. (obrigatório para enviar)</span></label>
+      <button class="btn" type="submit" data-label="Receber a leitura">Receber a leitura</button>
+      <p class="form-msg" role="status" aria-live="polite"></p>
+    </form>
+    <div id="lead-done" class="done" hidden tabindex="-1">
+      <h3>Recebido. Obrigado.</h3>
+      <p>A leitura chega em até 1 dia útil no contato que você informou, revisada pela ATLAS.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot-inner">
+    <span><strong>ATLAS</strong> - Gestão em Saúde · Goiânia/GO · Enxergamos o que sua operação não vê.</span>
+    <span><a href="https://atlasgestaosaude.com.br/privacidade">Privacidade</a> · Este site não usa cookies nem rastreadores.</span>
+  </div>
+</footer>
+<script src="/assets/atlas.js"></script>
+<script src="/assets/agenda.js"></script>
+</body>
+</html>
