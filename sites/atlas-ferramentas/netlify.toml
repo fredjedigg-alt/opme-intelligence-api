@@ -1,6 +1,9 @@
-# Site estático: sem build. Publica a própria pasta.
+# Site estático: HTML pronto, sem build. Publica a própria pasta.
+# O comando explícito abaixo sobrepõe qualquer comando de build definido no
+# painel do Netlify (ex.: "hugo" detectado automaticamente), que derrubaria o deploy.
 [build]
   publish = "."
+  command = "echo 'Site estatico: sem build'"
 
 [[headers]]
   for = "/*"
