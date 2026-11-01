@@ -1,0 +1,37 @@
+# Site estático: HTML pronto, sem build. Publica a própria pasta.
+# O comando explícito abaixo sobrepõe qualquer comando de build definido no
+# painel do Netlify (ex.: "hugo" detectado automaticamente), que derrubaria o deploy.
+[build]
+  publish = "."
+  command = "echo 'Site estatico: sem build'"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://atlasgestaosaude.com.br; connect-src 'self'; form-action 'self'; base-uri 'self'; frame-ancestors 'none'"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+# Atalhos curtos para usar em DM e stories: /g, /a, /m, /o
+[[redirects]]
+  from = "/g"
+  to = "/glosas/"
+  status = 301
+[[redirects]]
+  from = "/a"
+  to = "/agenda/"
+  status = 301
+[[redirects]]
+  from = "/m"
+  to = "/materiais/"
+  status = 301
+[[redirects]]
+  from = "/o"
+  to = "/opme/"
+  status = 301

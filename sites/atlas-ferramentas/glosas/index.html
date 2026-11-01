@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de glosas | ATLAS - Gestão em Saúde</title>
+<meta name="description" content="Quanto da sua glosa vira perda definitiva? Calcule com os seus números, sem dado de paciente.">
+<meta property="og:title" content="Calculadora de glosas · ATLAS">
+<meta property="og:description" content="Quanto da glosa do convênio vira perda definitiva na sua operação.">
+<meta property="og:image" content="https://atlasgestaosaude.com.br/og-image.png">
+<link rel="icon" href="https://atlasgestaosaude.com.br/favicon.svg">
+<link rel="stylesheet" href="/assets/atlas.css">
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <a href="/" data-carry aria-label="ATLAS - Gestão em Saúde, ferramentas"><img src="https://atlasgestaosaude.com.br/marca/atlas-logo-horizontal-cor-fundo-escuro.svg" alt="ATLAS - Gestão em Saúde" width="150" height="30"></a>
+    <nav aria-label="Principal">
+      <a href="/" data-carry>Ferramentas</a>
+      <a href="https://atlasgestaosaude.com.br/raio-x/">Raio-X</a>
+      <a href="https://atlasgestaosaude.com.br/">Site ATLAS</a>
+    </nav>
+  </div>
+</header>
+
+<main class="calc-wrap">
+  <div class="calc-head">
+    <p class="eyebrow">Ferramenta gratuita · faturamento de convênios</p>
+    <h1>Quanto da sua glosa vira perda definitiva?</h1>
+    <p>A glosa aparece no relatório do convênio. O que ninguém soma é quanto dela nunca volta: a parte que não é recorrida e a parte que é recorrida e perdida. Troque os números do exemplo pelos seus.</p>
+  </div>
+
+  <div class="calc-grid">
+    <section class="panel" id="inputs" aria-labelledby="in-title">
+      <h2 id="in-title">Seus números</h2>
+      <p class="panel-note">Os valores iniciais são um exemplo. Hospital: considere só o ambulatorial, ou faça uma conta por setor.</p>
+
+      <div class="field">
+        <label for="fat">Faturamento enviado aos convênios por mês</label>
+        <div class="input-unit"><span>R$</span><input id="fat" type="number" inputmode="decimal" min="0" step="1000" value="180000"></div>
+        <p class="hint">O total das contas enviadas, antes da glosa.</p>
+      </div>
+
+      <div class="field">
+        <label for="glosa">Quanto é glosado</label>
+        <div class="input-unit"><input id="glosa" type="number" inputmode="decimal" min="0" max="100" step="0.5" value="6"><span>% do enviado</span></div>
+        <p class="hint">Glosa inicial: o que o convênio recusou no primeiro retorno.</p>
+      </div>
+
+      <div class="field">
+        <label for="recorre">Quanto da glosa vocês recorrem</label>
+        <div class="input-unit"><input id="recorre" type="number" inputmode="decimal" min="0" max="100" step="5" value="40"><span>% da glosa</span></div>
+        <p class="hint">Se não sabe, este já é um achado. Use sua melhor estimativa.</p>
+      </div>
+
+      <div class="field">
+        <label for="sucesso">Do que é recorrido, quanto volta</label>
+        <div class="input-unit"><input id="sucesso" type="number" inputmode="decimal" min="0" max="100" step="5" value="50"><span>% recuperado</span></div>
+      </div>
+    </section>
+
+    <section class="result" aria-labelledby="out-title" aria-live="polite">
+      <h2 id="out-title" class="hp">Resultado</h2>
+      <div class="waterline">
+        <div class="above">
+          <p class="zone-label">O que se vê</p>
+          <p class="big"><output id="o-glosa-mes">R$ 0</output><small>glosados por mês</small></p>
+          <p class="panel-note">É o número que chega no relatório do convênio.</p>
+        </div>
+        <div class="below">
+          <p class="zone-label">O que custa</p>
+          <p class="big"><output id="o-perda-ano">R$ 0</output><small>de perda definitiva por ano</small></p>
+          <p id="o-perda-equiv">—</p>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:16px">
+        <div class="bar" role="img" id="bar" aria-label="Divisão da glosa">
+          <i class="b1" id="bar-rec"></i><i class="b2" id="bar-perdida"></i><i class="b3" id="bar-nunca"></i>
+        </div>
+        <div class="legend">
+          <span style="--c: var(--navy)">Recuperada no recurso</span>
+          <span style="--c: var(--gold)">Recorrida e perdida</span>
+          <span style="--c: #B8C3CF">Nunca recorrida</span>
+        </div>
+        <ul class="lines">
+          <li><span>Glosa no mês</span><span class="val" id="l-glosa">—</span><span class="nature n-calc"><b>cálculo</b>faturamento × % glosado</span></li>
+          <li><span>Recuperado com recurso, por mês</span><span class="val" id="l-rec">—</span><span class="nature n-calc"><b>cálculo</b>glosa × % recorrido × % recuperado</span></li>
+          <li><span>Nunca recorrida, por mês</span><span class="val" id="l-nunca">—</span><span class="nature n-calc"><b>cálculo</b>glosa que ninguém contestou</span></li>
+          <li><span>Perda definitiva, por mês</span><span class="val" id="l-perda">—</span><span class="nature n-calc"><b>cálculo</b>glosa − recuperado</span></li>
+          <li><span>Se toda glosa fosse recorrida, por ano</span><span class="val" id="l-pot">—</span><span class="nature n-est"><b>estimativa</b>supõe que a sua taxa de recuperação se mantém na glosa hoje não recorrida</span></li>
+        </ul>
+        <p class="insight" id="insight">—</p>
+        <p class="fine">Calculado só com os números que você informou. Comparação com referências de mercado entra no diagnóstico, com fonte e data declaradas.</p>
+      </div>
+    </section>
+  </div>
+
+  <section class="lead" aria-labelledby="lead-title">
+    <div>
+      <p class="eyebrow">Leitura gratuita do resultado</p>
+      <h2 id="lead-title">Quer saber o que está por trás deste número?</h2>
+    </div>
+    <p class="panel-note">Envie o resultado e, em até 1 dia útil, a ATLAS devolve uma leitura com as causas mais prováveis e o que conferir primeiro. Nenhum dado de paciente. Não vendemos software.</p>
+    <form id="lead" name="calc-glosas" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+      <input type="hidden" name="form-name" value="calc-glosas">
+      <input type="hidden" name="subject" value="Lead · Calculadora de glosas">
+      <input type="hidden" name="origem" value="direto">
+      <p class="hp"><label>Não preencha: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+      <div class="two">
+        <div class="field"><label for="f-nome">Nome</label><input id="f-nome" name="nome" type="text" autocomplete="name" required></div>
+        <div class="field"><label for="f-contato">WhatsApp ou e-mail</label><input id="f-contato" name="contato" type="text" autocomplete="email" required></div>
+      </div>
+      <div class="two">
+        <div class="field"><label for="f-inst">Instituição <span class="hint">(opcional)</span></label><input id="f-inst" name="instituicao" type="text" autocomplete="organization"></div>
+        <div class="field"><label for="f-cidade">Cidade / UF <span class="hint">(opcional)</span></label><input id="f-cidade" name="cidade" type="text" autocomplete="address-level2"></div>
+      </div>
+      <div class="field">
+        <label for="f-papel">Seu papel</label>
+        <select id="f-papel" name="papel" required>
+          <option value="">Selecione</option>
+          <option>Sócio-gestor</option>
+          <option>Diretor clínico ou técnico</option>
+          <option>Administrador ou gerente</option>
+          <option>Faturamento</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <textarea name="resumo" hidden aria-hidden="true"></textarea>
+      <label class="consent"><input type="checkbox" name="consentimento_tratamento" value="sim" required><span><strong>Autorizo</strong> a ATLAS - Gestão em Saúde a tratar estes dados e o resultado da calculadora para responder ao meu contato. Eles ficam guardados por até 12 meses, e posso pedir acesso, correção ou exclusão a qualquer momento. O serviço de formulários registra automaticamente o endereço IP e o tipo de navegador de cada envio. <a href="https://atlasgestaosaude.com.br/privacidade">Política de privacidade</a>. (obrigatório)</span></label>
+      <label class="consent"><input type="checkbox" name="consentimento_transferencia" value="sim" required><span><strong>Transferência internacional:</strong> autorizo, de forma específica, que estes dados sejam armazenados no serviço de formulários usado pela ATLAS, com servidores fora do Brasil. (obrigatório para enviar)</span></label>
+      <button class="btn" type="submit" data-label="Receber a leitura">Receber a leitura</button>
+      <p class="form-msg" role="status" aria-live="polite"></p>
+    </form>
+    <div id="lead-done" class="done" hidden tabindex="-1">
+      <h3>Recebido. Obrigado.</h3>
+      <p>A leitura chega em até 1 dia útil no contato que você informou, revisada pela ATLAS.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot-inner">
+    <span><strong>ATLAS</strong> - Gestão em Saúde · Goiânia/GO · Enxergamos o que sua operação não vê.</span>
+    <span><a href="https://atlasgestaosaude.com.br/privacidade">Privacidade</a> · Este site não usa cookies nem rastreadores.</span>
+  </div>
+</footer>
+<script src="/assets/atlas.js"></script>
+<script src="/assets/glosas.js"></script>
+</body>
+</html>

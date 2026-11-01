@@ -28,3 +28,7 @@ logs/
 Thumbs.db
 .vscode/
 .idea/
+
+# Netlify
+.netlify/
+sites/atlas-ferramentas/_deploy/

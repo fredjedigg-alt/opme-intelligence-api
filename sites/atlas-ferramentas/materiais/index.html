@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de materiais e OPME | ATLAS - Gestão em Saúde</title>
+<meta name="description" content="Quanto do que você recebe sai em material, e quanto varia o preço que você paga pelo mesmo item.">
+<meta property="og:title" content="Materiais e OPME · ATLAS">
+<meta property="og:description" content="Quanto do que você recebe sai em material, e quanto varia o preço que você paga pelo mesmo item.">
+<meta property="og:image" content="https://atlasgestaosaude.com.br/og-image.png">
+<link rel="icon" href="https://atlasgestaosaude.com.br/favicon.svg">
+<link rel="stylesheet" href="/assets/atlas.css">
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <a href="/" data-carry aria-label="ATLAS - Gestão em Saúde, ferramentas"><img src="https://atlasgestaosaude.com.br/marca/atlas-logo-horizontal-cor-fundo-escuro.svg" alt="ATLAS - Gestão em Saúde" width="150" height="30"></a>
+    <nav aria-label="Principal">
+      <a href="/" data-carry>Ferramentas</a>
+      <a href="https://atlasgestaosaude.com.br/raio-x/">Raio-X</a>
+      <a href="https://atlasgestaosaude.com.br/">Site ATLAS</a>
+    </nav>
+  </div>
+</header>
+
+<main class="calc-wrap">
+  <div class="calc-head">
+    <p class="eyebrow">Ferramenta gratuita · materiais, medicamentos e OPME</p>
+    <h1>Quanto do que você recebe sai em material?</h1>
+    <p>O custo do material some na conta do mês, mas decide se um procedimento dá lucro. Veja o peso do material em cada procedimento e quanto varia o preço que você paga pelo mesmo item. Troque os números do exemplo pelos seus.</p>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="Modo da calculadora">
+    <button type="button" role="tab" id="tab-proc" aria-controls="view-proc" aria-selected="true">Peso do material por procedimento</button>
+    <button type="button" role="tab" id="tab-compra" aria-controls="view-compra" aria-selected="false">Preço de compra do mesmo item</button>
+  </div>
+
+  <div id="view-proc" role="tabpanel" aria-labelledby="tab-proc">
+    <div class="calc-grid">
+      <section class="panel" aria-labelledby="in-proc">
+        <h2 id="in-proc">Seus procedimentos</h2>
+        <p class="panel-note">Por procedimento: o valor que você recebe e o custo de materiais, medicamentos e OPME usados nele. Os valores iniciais são um exemplo.</p>
+        <div class="rows" id="proc-rows"></div>
+        <button type="button" class="btn-ghost" id="add-proc">+ Adicionar procedimento</button>
+      </section>
+
+      <section class="result" aria-labelledby="out-proc" aria-live="polite">
+        <h2 id="out-proc" class="hp">Resultado por procedimento</h2>
+        <div class="waterline">
+          <div class="above">
+            <p class="zone-label">O que se vê</p>
+            <p class="big"><output id="p-receita">R$ 0</output><small>recebidos por mês</small></p>
+            <p class="panel-note">Nestes procedimentos, somando o volume informado.</p>
+          </div>
+          <div class="below">
+            <p class="zone-label">O que custa</p>
+            <p class="big"><output id="p-pct">0%</output><small>sai em material</small></p>
+            <p id="p-mat">—</p>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <div class="tablewrap">
+            <table class="rank">
+              <thead><tr><th>Procedimento</th><th class="r">Material</th><th class="r">Sobra por unidade</th><th class="r">Sobra no mês</th></tr></thead>
+              <tbody id="p-table"></tbody>
+            </table>
+          </div>
+          <p class="nature n-calc"><b>cálculo</b>material ÷ valor recebido; sobra = recebido − material, antes de honorário, sala, equipe e impostos</p>
+          <p class="insight" id="p-insight">—</p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div id="view-compra" role="tabpanel" aria-labelledby="tab-compra" hidden>
+    <div class="calc-grid">
+      <section class="panel" aria-labelledby="in-compra">
+        <h2 id="in-compra">Compras do mesmo item</h2>
+        <p class="panel-note">Lance as compras de um mesmo material no período: o preço unitário de cada compra e a quantidade. Os valores iniciais são um exemplo.</p>
+        <div class="field">
+          <label for="item">Item</label>
+          <input id="item" type="text" value="Parafuso de interferência bioabsorvível">
+        </div>
+        <div class="field">
+          <label for="periodo">Período dessas compras</label>
+          <div class="input-unit"><input id="periodo" type="number" inputmode="numeric" min="1" step="1" value="3"><span>meses</span></div>
+        </div>
+        <div class="rows" id="buy-rows"></div>
+        <button type="button" class="btn-ghost" id="add-buy">+ Adicionar compra</button>
+      </section>
+
+      <section class="result" aria-labelledby="out-compra" aria-live="polite">
+        <h2 id="out-compra" class="hp">Resultado das compras</h2>
+        <div class="waterline">
+          <div class="above">
+            <p class="zone-label">O que se vê</p>
+            <p class="big"><output id="b-gasto">R$ 0</output><small>gastos no período</small></p>
+            <p class="panel-note" id="b-faixa">—</p>
+          </div>
+          <div class="below">
+            <p class="zone-label">O que custa</p>
+            <p class="big"><output id="b-eco-ano">R$ 0</output><small>por ano acima da mediana</small></p>
+            <p id="b-eco-det">—</p>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <ul class="lines">
+            <li><span>Menor e maior preço pago</span><span class="val" id="b-minmax">—</span><span class="nature n-dado"><b>dado fornecido</b>das compras lançadas</span></li>
+            <li><span>Diferença entre o maior e o menor</span><span class="val" id="b-disp">—</span><span class="nature n-calc"><b>cálculo</b>maior ÷ menor − 1</span></li>
+            <li><span>Preço mediano</span><span class="val" id="b-med">—</span><span class="nature n-calc"><b>cálculo</b>mediana dos preços unitários</span></li>
+            <li><span>Pago acima da mediana, no período</span><span class="val" id="b-eco">—</span><span class="nature n-calc"><b>cálculo</b>soma de (preço − mediana) × quantidade, só nas compras acima dela</span></li>
+            <li><span>Teto teórico: tudo pelo menor preço, por ano</span><span class="val" id="b-teto">—</span><span class="nature n-est"><b>estimativa</b>supõe que o menor preço se repetiria em todas as compras</span></li>
+          </ul>
+          <p class="insight" id="b-insight">—</p>
+          <p class="fine">Esta conta vale para um item de cada vez. No <a href="/opme/" data-carry>diagnóstico de compras de OPME</a>, a ATLAS padroniza as descrições de todas as suas compras e faz esta leitura para cada produto equivalente.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <section class="lead" aria-labelledby="lead-title">
+    <div>
+      <p class="eyebrow">Leitura gratuita do resultado</p>
+      <h2 id="lead-title">Quer saber o que está por trás deste número?</h2>
+    </div>
+    <p class="panel-note">Envie o resultado e, em até 1 dia útil, a ATLAS devolve uma leitura com as causas mais prováveis e o que conferir primeiro. Nenhum dado de paciente. Não vendemos software.</p>
+    <form id="lead" name="calc-materiais" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+      <input type="hidden" name="form-name" value="calc-materiais">
+      <input type="hidden" name="subject" value="Lead · Calculadora de materiais e OPME">
+      <input type="hidden" name="origem" value="direto">
+      <p class="hp"><label>Não preencha: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+      <div class="two">
+        <div class="field"><label for="f-nome">Nome</label><input id="f-nome" name="nome" type="text" autocomplete="name" required></div>
+        <div class="field"><label for="f-contato">WhatsApp ou e-mail</label><input id="f-contato" name="contato" type="text" autocomplete="email" required></div>
+      </div>
+      <div class="two">
+        <div class="field"><label for="f-inst">Instituição <span class="hint">(opcional)</span></label><input id="f-inst" name="instituicao" type="text" autocomplete="organization"></div>
+        <div class="field"><label for="f-cidade">Cidade / UF <span class="hint">(opcional)</span></label><input id="f-cidade" name="cidade" type="text" autocomplete="address-level2"></div>
+      </div>
+      <div class="field">
+        <label for="f-papel">Seu papel</label>
+        <select id="f-papel" name="papel" required>
+          <option value="">Selecione</option>
+          <option>Sócio-gestor</option>
+          <option>Diretor clínico ou técnico</option>
+          <option>Administrador ou gerente</option>
+          <option>Compras ou suprimentos</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <textarea name="resumo" hidden aria-hidden="true"></textarea>
+      <label class="consent"><input type="checkbox" name="consentimento_tratamento" value="sim" required><span><strong>Autorizo</strong> a ATLAS - Gestão em Saúde a tratar estes dados e o resultado da calculadora para responder ao meu contato. Eles ficam guardados por até 12 meses, e posso pedir acesso, correção ou exclusão a qualquer momento. O serviço de formulários registra automaticamente o endereço IP e o tipo de navegador de cada envio. <a href="https://atlasgestaosaude.com.br/privacidade">Política de privacidade</a>. (obrigatório)</span></label>
+      <label class="consent"><input type="checkbox" name="consentimento_transferencia" value="sim" required><span><strong>Transferência internacional:</strong> autorizo, de forma específica, que estes dados sejam armazenados no serviço de formulários usado pela ATLAS, com servidores fora do Brasil. (obrigatório para enviar)</span></label>
+      <button class="btn" type="submit" data-label="Receber a leitura">Receber a leitura</button>
+      <p class="form-msg" role="status" aria-live="polite"></p>
+    </form>
+    <div id="lead-done" class="done" hidden tabindex="-1">
+      <h3>Recebido. Obrigado.</h3>
+      <p>A leitura chega em até 1 dia útil no contato que você informou, revisada pela ATLAS.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot-inner">
+    <span><strong>ATLAS</strong> - Gestão em Saúde · Goiânia/GO · Enxergamos o que sua operação não vê.</span>
+    <span><a href="https://atlasgestaosaude.com.br/privacidade">Privacidade</a> · Este site não usa cookies nem rastreadores.</span>
+  </div>
+</footer>
+<script src="/assets/atlas.js"></script>
+<script src="/assets/materiais.js"></script>
+</body>
+</html>
