@@ -15,7 +15,7 @@
   [headers.values]
     Cache-Control = "public, max-age=3600"
 
-# Atalhos curtos para usar em DM e stories: /g, /a, /m
+# Atalhos curtos para usar em DM e stories: /g, /a, /m, /o
 [[redirects]]
   from = "/g"
   to = "/glosas/"
@@ -27,4 +27,8 @@
 [[redirects]]
   from = "/m"
   to = "/materiais/"
+  status = 301
+[[redirects]]
+  from = "/o"
+  to = "/opme/"
   status = 301

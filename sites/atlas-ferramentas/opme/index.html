@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diagnóstico de compras de OPME | ATLAS - Gestão em Saúde</title>
+<meta name="description" content="Como a ATLAS usa o OPME Intelligence no diagnóstico: padroniza as descrições das suas compras de OPME e mostra quanto se paga acima da mediana por item.">
+<meta property="og:title" content="Diagnóstico de compras de OPME · ATLAS">
+<meta property="og:description" content="Como a ATLAS usa o OPME Intelligence no diagnóstico: padroniza as descrições das suas compras de OPME e mostra quanto se paga acima da mediana por item.">
+<meta property="og:image" content="https://atlasgestaosaude.com.br/og-image.png">
+<link rel="icon" href="https://atlasgestaosaude.com.br/favicon.svg">
+<link rel="stylesheet" href="/assets/atlas.css">
+</head>
+<body>
+<header class="top">
+  <div class="top-inner">
+    <a href="/" data-carry aria-label="ATLAS - Gestão em Saúde, ferramentas"><img src="https://atlasgestaosaude.com.br/marca/atlas-logo-horizontal-cor-fundo-escuro.svg" alt="ATLAS - Gestão em Saúde" width="150" height="30"></a>
+    <nav aria-label="Principal">
+      <a href="/" data-carry>Ferramentas</a>
+      <a href="https://atlasgestaosaude.com.br/raio-x/">Raio-X</a>
+      <a href="https://atlasgestaosaude.com.br/">Site ATLAS</a>
+    </nav>
+  </div>
+</header>
+
+<main class="calc-wrap">
+  <div class="calc-head">
+    <p class="eyebrow">Hospitais e clínicas cirúrgicas · compras de OPME</p>
+    <h1>O mesmo implante, três nomes, três preços.</h1>
+    <p>Na nota fiscal, na cotação e na planilha de compras, um mesmo produto aparece escrito de jeitos diferentes. Enquanto ele não é reconhecido como o mesmo item, ninguém consegue dizer quanto se paga a mais por ele. É aí que o diagnóstico de compras de OPME da ATLAS começa.</p>
+  </div>
+
+  <div class="calc-grid">
+    <section class="panel" aria-labelledby="ex-title">
+      <h2 id="ex-title">Como chega</h2>
+      <p class="panel-note">Descrições como costumam aparecer em notas e cotações (exemplo ilustrativo).</p>
+      <ul class="lines">
+        <li><span>PLACA BLOQ. RADIO DIST. VOLAR 2,4MM 6F TI</span><span class="val">R$ 2.180</span></li>
+        <li><span>Placa volar rádio distal bloqueada titânio 6 furos ref XZ-244</span><span class="val">R$ 2.950</span></li>
+        <li><span>PL BLOQUEADA DISTAL RADIO 2.4 - 6 FUROS (ESTERIL)</span><span class="val">R$ 2.410</span></li>
+      </ul>
+      <p class="insight">Três linhas, três fornecedores, nenhuma comparação possível na planilha. Para o sistema de compras, são três produtos.</p>
+    </section>
+
+    <section class="result" aria-labelledby="out-title">
+      <h2 id="out-title" class="hp">Depois da padronização</h2>
+      <div class="waterline">
+        <div class="above">
+          <p class="zone-label">Depois da padronização</p>
+          <p class="big" style="font-size:var(--step-2)">Placa bloqueada distal rádio volar · 2,4 mm · 6 furos · titânio</p>
+          <p class="panel-note">Ortopedia › Placas › Placa bloqueada distal rádio volar</p>
+        </div>
+        <div class="below">
+          <p class="zone-label">O que passa a aparecer</p>
+          <p class="big">35%<small>entre o menor e o maior preço pago</small></p>
+          <p>Com o item reconhecido, entram mediana, dispersão, compras fora da curva e quanto se pagou acima da mediana, por fornecedor.</p>
+        </div>
+      </div>
+      <p class="fine" style="margin-top:10px">Exemplo ilustrativo. No diagnóstico, todo número vem das suas compras, com origem declarada.</p>
+    </section>
+  </div>
+
+  <section class="panel" aria-labelledby="como-title">
+    <h2 id="como-title">O que a ATLAS faz no diagnóstico</h2>
+    <p class="panel-note">A análise usa o OPME Intelligence, ferramenta própria da ATLAS. A ferramenta fica com a ATLAS; o resultado e os dados ficam com você. Não vendemos nem licenciamos software.</p>
+    <ul class="lines">
+      <li><span><strong>1. Padroniza as descrições.</strong> Cada linha de nota, cotação ou planilha vira um item com nome canônico, especialidade, material, medida e referência, com a evidência de onde cada atributo saiu.</span><span class="val"></span></li>
+      <li><span><strong>2. Decide o que é comparável.</strong> Dois itens só entram na mesma conta quando são de fato equivalentes. O que fica em dúvida vai para revisão humana, não para a média.</span><span class="val"></span></li>
+      <li><span><strong>3. Mede o preço.</strong> Mediana, faixa, dispersão e compras fora da curva para cada item, por fornecedor e por período.</span><span class="val"></span></li>
+      <li><span><strong>4. Prioriza.</strong> Os itens em que a diferença de preço mais pesa no total, com o valor pago acima da mediana e o que conferir primeiro: tabela de referência, contrato, urgência, cotação.</span><span class="val"></span></li>
+    </ul>
+    <p class="fine">Referência externa de preço só entra com fonte e data declaradas. A conta parte sempre das suas próprias compras.</p>
+  </section>
+
+  <div class="calc-grid">
+    <section class="panel" aria-labelledby="envia-title">
+      <h2 id="envia-title">O que você envia</h2>
+      <ul class="lines">
+        <li><span>Planilha de compras ou exportação do sistema, de 6 a 12 meses</span><span class="val"></span></li>
+        <li><span>Notas fiscais ou cotações, se a planilha não tiver descrição completa</span><span class="val"></span></li>
+        <li><span>Nenhum dado de paciente: linhas ligadas a atendimento são anonimizadas antes da análise</span><span class="val"></span></li>
+      </ul>
+    </section>
+    <section class="panel" aria-labelledby="recebe-title">
+      <h2 id="recebe-title">O que você recebe</h2>
+      <ul class="lines">
+        <li><span>Catálogo padronizado dos itens comprados, que fica com você</span><span class="val"></span></li>
+        <li><span>Ranking dos itens com maior valor pago acima da mediana</span><span class="val"></span></li>
+        <li><span>Hipóteses de causa e plano de ação com dono, prazo e indicador</span><span class="val"></span></li>
+      </ul>
+    </section>
+  </div>
+
+  <section class="lead" aria-labelledby="lead-title">
+    <div>
+      <p class="eyebrow">Conversar sobre compras de OPME</p>
+      <h2 id="lead-title">Quer ver isso nas suas compras?</h2>
+    </div>
+    <p class="panel-note">Conte o tamanho da operação. Retornamos em até 1 dia útil para combinar uma primeira conversa e o escopo do diagnóstico. O investimento é apresentado depois da conversa, proporcional ao que está em jogo.</p>
+    <form id="lead" name="diagnostico-opme" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+      <input type="hidden" name="form-name" value="diagnostico-opme">
+      <input type="hidden" name="subject" value="Lead · Diagnóstico de compras de OPME">
+      <input type="hidden" name="origem" value="direto">
+      <p class="hp"><label>Não preencha: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+      <div class="two">
+        <div class="field"><label for="f-nome">Nome</label><input id="f-nome" name="nome" type="text" autocomplete="name" required></div>
+        <div class="field"><label for="f-contato">WhatsApp ou e-mail</label><input id="f-contato" name="contato" type="text" autocomplete="email" required></div>
+      </div>
+      <div class="two">
+        <div class="field"><label for="f-inst">Instituição</label><input id="f-inst" name="instituicao" type="text" autocomplete="organization" required></div>
+        <div class="field"><label for="f-cidade">Cidade / UF <span class="hint">(opcional)</span></label><input id="f-cidade" name="cidade" type="text" autocomplete="address-level2"></div>
+      </div>
+      <div class="two">
+        <div class="field">
+          <label for="f-papel">Seu papel</label>
+          <select id="f-papel" name="papel" required>
+            <option value="">Selecione</option>
+            <option>Sócio-gestor ou diretor</option>
+            <option>Compras ou suprimentos</option>
+            <option>Diretor clínico ou técnico</option>
+            <option>Administrador ou gerente</option>
+            <option>Outro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f-volume">Gasto mensal com OPME</label>
+          <select id="f-volume" name="gasto_opme" required>
+            <option value="">Selecione</option>
+            <option>Até R$ 100 mil</option>
+            <option>R$ 100–500 mil</option>
+            <option>R$ 500 mil–2 milhões</option>
+            <option>Acima de R$ 2 milhões</option>
+            <option>Não sei</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="f-msg">Em uma frase, o que mais pesa nas compras de OPME? <span class="hint">(opcional; não inclua dados de pacientes)</span></label>
+        <textarea id="f-msg" name="mensagem" rows="3"></textarea>
+      </div>
+      <label class="consent"><input type="checkbox" name="consentimento_tratamento" value="sim" required><span><strong>Autorizo</strong> a ATLAS - Gestão em Saúde a tratar estes dados para responder ao meu contato. Eles ficam guardados por até 12 meses, e posso pedir acesso, correção ou exclusão a qualquer momento. O serviço de formulários registra automaticamente o endereço IP e o tipo de navegador de cada envio. <a href="https://atlasgestaosaude.com.br/privacidade">Política de privacidade</a>. (obrigatório)</span></label>
+      <label class="consent"><input type="checkbox" name="consentimento_transferencia" value="sim" required><span><strong>Transferência internacional:</strong> autorizo, de forma específica, que estes dados sejam armazenados no serviço de formulários usado pela ATLAS, com servidores fora do Brasil. (obrigatório para enviar)</span></label>
+      <button class="btn" type="submit" data-label="Quero conversar">Quero conversar</button>
+      <p class="form-msg" role="status" aria-live="polite"></p>
+    </form>
+    <div id="lead-done" class="done" hidden tabindex="-1">
+      <h3>Recebido. Obrigado.</h3>
+      <p>Retornamos em até 1 dia útil no contato que você informou.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot-inner">
+    <span><strong>ATLAS</strong> - Gestão em Saúde · Goiânia/GO · Enxergamos o que sua operação não vê.</span>
+    <span><a href="https://atlasgestaosaude.com.br/privacidade">Privacidade</a> · Este site não usa cookies nem rastreadores.</span>
+  </div>
+</footer>
+<script src="/assets/atlas.js"></script>
+<script src="/assets/opme.js"></script>
+</body>
+</html>

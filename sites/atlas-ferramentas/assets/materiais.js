@@ -142,7 +142,7 @@
     var txt;
     if (c.n < 2) txt = "Com duas ou mais compras dá para ver quanto o preço do mesmo item varia.";
     else if (c.disp >= 0.3) txt = "O mesmo item foi comprado com " + A.pct(c.disp) + " de diferença entre o maior e o menor preço. Hipótese a testar: compra sem tabela de referência, por urgência ou por fornecedor indicado sem cotação.";
-    else txt = "A variação de preço está contida (" + A.pct(c.disp) + "). O próximo passo é saber se a sua mediana está alta frente ao mercado: é aí que entra a comparação com compras públicas.";
+    else txt = "A variação de preço está contida (" + A.pct(c.disp) + "). O próximo passo é olhar o conjunto: o mesmo produto costuma aparecer com nomes diferentes, e só depois de padronizar dá para comparar de verdade.";
     document.getElementById("b-insight").textContent = txt;
   }
 

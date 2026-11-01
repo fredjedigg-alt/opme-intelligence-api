@@ -1,7 +1,7 @@
 # ATLAS · Ferramentas (link na bio)
 
-Site estático com o hub de link na bio e três calculadoras gratuitas que captam leads
-para a ATLAS - Gestão em Saúde. Sem build, sem cookies, sem rastreadores.
+Site estático com o hub de link na bio, três calculadoras gratuitas e a página do diagnóstico
+de compras de OPME, todos captando leads para a ATLAS - Gestão em Saúde. Sem build, sem cookies, sem rastreadores.
 
 | Página | Caminho | Atalho | Formulário (Netlify Forms) |
 |---|---|---|---|
@@ -9,6 +9,7 @@ para a ATLAS - Gestão em Saúde. Sem build, sem cookies, sem rastreadores.
 | Calculadora de glosas | `/glosas/` | `/g` | `calc-glosas` |
 | Agenda ociosa e faltas | `/agenda/` | `/a` | `calc-agenda` |
 | Materiais e OPME | `/materiais/` (aba compras: `/materiais/#compras`) | `/m` | `calc-materiais` |
+| Diagnóstico de compras de OPME | `/opme/` | `/o` | `diagnostico-opme` |
 
 O Raio-X, o Mini-Diagnóstico e o playbook continuam no site principal
 (`atlasgestaosaude.com.br`) e são linkados a partir do hub.
@@ -34,11 +35,21 @@ Use estes links na automação de DM (ManyChat ou similar). O `?o=` identifica o
 | AGENDA | `https://atlas-ferramentas.netlify.app/a?o=ig-agenda` |
 | FALTA | `https://atlas-ferramentas.netlify.app/a?o=ig-falta` |
 | MATERIAL | `https://atlas-ferramentas.netlify.app/m?o=ig-material` |
-| OPME | `https://atlas-ferramentas.netlify.app/materiais/?o=ig-opme#compras` |
+| OPME | `https://atlas-ferramentas.netlify.app/o?o=ig-opme` |
+| COMPRA | `https://atlas-ferramentas.netlify.app/materiais/?o=ig-compra#compras` |
 | RAIOX | `https://atlas-ferramentas.netlify.app/?o=ig-raiox` |
 
 Link da bio: `https://atlas-ferramentas.netlify.app/?o=ig-bio`.
 Troque o domínio quando apontar `ferramentas.atlasgestaosaude.com.br` para o projeto.
+
+## OPME Intelligence: como é apresentado
+
+A página `/opme/` apresenta o OPME Intelligence como **ferramenta própria usada dentro do diagnóstico**,
+não como software à venda (coerente com "não vendemos software" do site principal). O texto promete só o
+que a ferramenta faz hoje com os dados do cliente: padronizar descrições, decidir equivalência, medir
+mediana, dispersão e compras fora da curva, e priorizar. Os preços de mercado do banco da API são
+sintéticos (seed de demonstração), por isso a página não promete benchmark contra o mercado:
+referência externa só entra com fonte e data declaradas.
 
 ## Princípios aplicados (os mesmos do site principal)
 
